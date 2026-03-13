@@ -543,6 +543,38 @@
     }
     #top-nav > * { pointer-events: auto; }
 
+    /* 해금 힌트 버튼 */
+    #unlock-hint-btn {
+      display: none;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-panel);
+      color: var(--text-secondary);
+      font-size: 15px; font-weight: 700;
+      cursor: default;
+      align-items: center; justify-content: center;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    body[data-phase="0"] #unlock-hint-btn { display: flex; }
+    #unlock-hint-btn::after {
+      content: "감사일기를 두 번 쓰면 '오늘 할 일'이 활성화됩니다.";
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--text-primary);
+      color: var(--bg);
+      font-size: 12px; font-weight: 400;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    #unlock-hint-btn:hover::after { opacity: 1; }
+
     /* 로그인 버튼 */
     #auth-btn {
       height: 38px;
@@ -1074,6 +1106,7 @@
 
 <!-- 상단 네비게이션 (로그인 + 설정 버튼) -->
 <div id="top-nav">
+  <button id="unlock-hint-btn">!</button>
   <button id="auth-btn" onclick="handleAuthClick()">
     <img id="auth-avatar" style="display:none" alt="">
     <span id="auth-label">로그인</span>
@@ -2438,14 +2471,11 @@ async function addGratitude() {
   const items = await getData(key) || [];
   items.push({ text, createdAt: Date.now() });
   await setData(key, items); input.value = ''; renderGratitude(items);
-  // 해금 시스템: 감사일기 작성일 기록 후 페이즈 업그레이드 체크
-  const days = await getData(GRATITUDE_DAYS_KEY) || [];
-  if (!days.includes(viewDate)) {
-    days.push(viewDate);
-    await setData(GRATITUDE_DAYS_KEY, days);
-    await checkPhaseUpgrade();
-    applyPhase();
-  }
+  // 해금 시스템: 총 작성 횟수 누적 후 즉시 페이즈 체크
+  const count = (await getData(GRATITUDE_COUNT_KEY) || 0) + 1;
+  await setData(GRATITUDE_COUNT_KEY, count);
+  await checkPhaseUpgrade();
+  applyPhase();
 }
 
 async function deleteGratitude(idx) {
@@ -3049,9 +3079,10 @@ async function clearMemo() {
 }
 
 // ── 위젯 해금 페이즈 시스템 ───────────────────────────
-const ONBOARDING_KEY    = 'onboarding_done';
-const PHASE_KEY         = 'app_phase';
-const GRATITUDE_DAYS_KEY = 'gratitude_days';
+const ONBOARDING_KEY      = 'onboarding_done';
+const PHASE_KEY           = 'app_phase';
+const GRATITUDE_DAYS_KEY  = 'gratitude_days';
+const GRATITUDE_COUNT_KEY = 'gratitude_entry_count';
 
 // 단계별 허용 위젯 목록 (누적)
 const PHASE_WIDGETS = [
@@ -3102,10 +3133,9 @@ async function checkPhaseUpgrade() {
   if (phase >= PHASE_WIDGETS.length - 1) return; // 이미 최고 단계
 
   if (phase === 0) {
-    // 조건: 서로 다른 날 2일치 감사일기 + 오늘이 그 이후 날짜
-    const days = await getData(GRATITUDE_DAYS_KEY) || [];
-    const unique = [...new Set(days)].sort();
-    if (unique.length >= 2 && todayKey() > unique[unique.length - 1]) {
+    // 조건: 감사일기 총 2회 작성 시 즉시 해금
+    const count = await getData(GRATITUDE_COUNT_KEY) || 0;
+    if (count >= 2) {
       localStorage.setItem(PHASE_KEY, '1');
       showUnlockBanner(1);
     }
