@@ -981,6 +981,13 @@
     line-height: 1.65; font-style: italic; white-space: nowrap;
     text-align: left;
   }
+  #onboarding-unlock-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    text-align: center;
+  }
   #onboarding-start-btn {
     background: var(--accent); color: #fff; border: none;
     border-radius: var(--radius-md); padding: 15px 0;
@@ -1015,7 +1022,16 @@
     grid-template-columns: 1fr;
     max-width: 520px; margin-left: auto; margin-right: auto;
   }
-  body[data-phase="0"] .phase-hide { display: none !important; }
+  body[data-phase="0"] .phase-hide {
+    opacity: 0.38;
+    cursor: default;
+    pointer-events: none;
+  }
+  body[data-phase="0"] .phase-hide::after {
+    content: '🔒';
+    margin-left: auto;
+    font-size: 11px;
+  }
 
   /* 위젯 설정 모달 */
   #widget-modal-overlay {
@@ -1088,6 +1104,7 @@
       <div class="onboarding-example-card">"오늘 날씨가 나쁘지 않았다."</div>
       <div class="onboarding-example-card">"잠에서 깼을 때 몸이 가벼웠다."</div>
     </div>
+    <p id="onboarding-unlock-hint">꾸준히 기록하면 할 일 관리, 지출 내역 등<br>더 많은 기능이 순서대로 열립니다.</p>
     <button id="onboarding-start-btn" onclick="startOnboarding()">지금 시작하기 →</button>
   </div>
 </div>
