@@ -1065,6 +1065,8 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
   }
   #widget-modal-grid .settings-item { border-radius: var(--radius-sm); border-bottom: none; }
+  #widget-modal-grid .settings-item.phase-locked { opacity: 0.38; cursor: default; }
+  .widget-lock-icon { font-size: 12px; margin-left: auto; }
 
   </style>
 </head>
@@ -1088,7 +1090,7 @@
     <span>다크 모드</span>
     <div class="toggle-switch" id="darkmode-toggle"></div>
   </div>
-  <div class="settings-search-row phase-hide" onclick="openWidgetModal(); toggleSettingsDropdown()">위젯 설정</div>
+  <div class="settings-search-row" onclick="openWidgetModal(); toggleSettingsDropdown()">위젯 설정</div>
 </div>
 
 <!-- 온보딩 오버레이 (첫 방문 시) -->
@@ -2598,15 +2600,17 @@ function updateColumnVisibility() {
 function renderWidgetModal() {
   const grid = document.getElementById('widget-modal-grid');
   grid.innerHTML = '';
+  const phase = parseInt(localStorage.getItem(PHASE_KEY) || '0');
+  const allowed = PHASE_WIDGETS[Math.min(phase, PHASE_WIDGETS.length - 1)];
   WIDGET_META.forEach(({ id, name }) => {
-    const isVisible = !document.getElementById(id).classList.contains('widget-hidden');
+    const isPhaseLocked = !allowed.includes(id);
+    const isVisible = !document.getElementById(id)?.classList.contains('widget-hidden');
     const item = document.createElement('div');
-    item.className = 'settings-item';
-    item.innerHTML = `
-      <span class="settings-item-name">${name}</span>
-      <div class="toggle-switch${isVisible ? ' on' : ''}"></div>
-    `;
-    item.onclick = () => toggleWidget(id);
+    item.className = 'settings-item' + (isPhaseLocked ? ' phase-locked' : '');
+    item.innerHTML = isPhaseLocked
+      ? `<span class="settings-item-name">${name}</span><span class="widget-lock-icon">🔒</span>`
+      : `<span class="settings-item-name">${name}</span><div class="toggle-switch${isVisible ? ' on' : ''}"></div>`;
+    if (!isPhaseLocked) item.onclick = () => toggleWidget(id);
     grid.appendChild(item);
   });
 }
