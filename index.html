@@ -2996,6 +2996,7 @@ function applyPhase() {
     const el = document.getElementById(id);
     if (!el) return;
     el.style.animation = 'none';
+    el.style.opacity = '1';
     el.classList.toggle('widget-hidden', !allowed.includes(id));
   });
   updateColumnVisibility();
