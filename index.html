@@ -262,6 +262,7 @@
     .list-item:hover .del-btn { opacity:1; }
     .del-btn:hover { color:var(--danger); }
     .empty-state { text-align:center; padding:18px 0; color:var(--text-muted); font-size:12px; }
+    #todo-phase-hint { font-size:11px; color:var(--text-muted); text-align:center; padding:8px 0 2px; line-height:1.6; }
 
     /* Date Nav */
     #date-nav {
@@ -1246,6 +1247,7 @@
         </div>
         <ul class="list-items" id="todo-list"></ul>
         <div class="empty-state" id="todo-empty">오늘의 할 일을 추가해보세요</div>
+        <div id="todo-phase-hint"></div>
       </div>
 
       <div class="panel" id="panel-monthly-todo">
@@ -2057,6 +2059,7 @@ function formatTodoTime(mins) {
 
 async function loadTodos() {
   renderTodos(await getData(`todos_${viewDate}`) || []);
+  updateTodoPhaseHint();
 }
 function renderTodos(todos) {
   const list=document.getElementById('todo-list'); const empty=document.getElementById('todo-empty');
@@ -2102,10 +2105,26 @@ function renderTodos(todos) {
     list.appendChild(li);
   });
 }
+function updateTodoPhaseHint() {
+  const hint = document.getElementById('todo-phase-hint');
+  if (!hint) return;
+  const phase = parseInt(localStorage.getItem(PHASE_KEY) || '0');
+  if (phase !== 1) { hint.textContent = ''; return; }
+  const days = JSON.parse(localStorage.getItem(TODO_COMPLETE_DAYS_KEY) || '[]');
+  const count = new Set(days).size;
+  hint.textContent = `오늘 가장 중요한 일 1개에 집중해보세요 · ${count}/3일 완료`;
+}
+
 async function addTodo() {
   const input=document.getElementById('todo-input'); const text=input.value.trim(); if(!text) return;
   const minsInput=document.getElementById('todo-mins-input');
   const mins=parseInt(minsInput.value)||0;
+  // phase 1 제한: 하루 1개
+  const phase = parseInt(localStorage.getItem(PHASE_KEY) || '0');
+  if (phase === 1) {
+    const existing = await getData(`todos_${viewDate}`) || [];
+    if (existing.length >= 1) { input.focus(); return; }
+  }
   const key=`todos_${viewDate}`; const todos=await getData(key)||[];
   todos.push({text, mins: mins||null, done:false, createdAt:Date.now()});
   await setData(key,todos); input.value=''; minsInput.value=''; renderTodos(todos);
@@ -2113,6 +2132,17 @@ async function addTodo() {
 async function toggleTodo(idx) {
   const key=`todos_${viewDate}`; const todos=await getData(key)||[];
   todos[idx].done=!todos[idx].done; await setData(key,todos); renderTodos(todos);
+  // 완료 처리 시 날짜 기록 → 페이즈 업그레이드 체크
+  if (todos[idx].done) {
+    const days = await getData(TODO_COMPLETE_DAYS_KEY) || [];
+    if (!days.includes(viewDate)) {
+      days.push(viewDate);
+      await setData(TODO_COMPLETE_DAYS_KEY, days);
+    }
+    await checkPhaseUpgrade();
+    applyPhase();
+  }
+  updateTodoPhaseHint();
 }
 async function deleteTodo(idx) {
   const key=`todos_${viewDate}`; const todos=await getData(key)||[];
@@ -3090,21 +3120,23 @@ async function clearMemo() {
 }
 
 // ── 위젯 해금 페이즈 시스템 ───────────────────────────
-const ONBOARDING_KEY      = 'onboarding_done';
-const PHASE_KEY           = 'app_phase';
-const GRATITUDE_DAYS_KEY  = 'gratitude_days';
-const GRATITUDE_COUNT_KEY = 'gratitude_entry_count';
+const ONBOARDING_KEY        = 'onboarding_done';
+const PHASE_KEY             = 'app_phase';
+const GRATITUDE_DAYS_KEY    = 'gratitude_days';
+const GRATITUDE_COUNT_KEY   = 'gratitude_entry_count';
+const TODO_COMPLETE_DAYS_KEY = 'todo_complete_days';
 
 // 단계별 허용 위젯 목록 (누적)
 const PHASE_WIDGETS = [
-  ['panel-gratitude'],                        // 0단계: 감사일기만
-  ['panel-gratitude', 'panel-todo'],          // 1단계: + 오늘 할 일
-  // 이후 단계는 추후 추가
+  ['panel-gratitude'],                                                          // 0단계: 감사일기만
+  ['panel-gratitude', 'panel-todo'],                                            // 1단계: + 오늘 할 일 (1개 제한)
+  ['panel-gratitude', 'panel-todo', 'panel-done', 'panel-vision'],              // 2단계: + 오늘 한 일, 비전보드 (제한 해제)
 ];
 
 const PHASE_UNLOCK_MESSAGES = [
   null,
-  "'오늘 할 일' 위젯이 해금됐습니다.",
+  "'오늘 할 일' 위젯을 사용할 수 있습니다.",
+  "'오늘 한 일'과 '비전보드' 위젯이 열렸습니다. 할 일 제한도 해제됩니다!",
 ];
 
 async function initPhase() {
@@ -3149,6 +3181,15 @@ async function checkPhaseUpgrade() {
     if (count >= 2) {
       localStorage.setItem(PHASE_KEY, '1');
       showUnlockBanner(1);
+    }
+  }
+
+  if (phase === 1) {
+    // 조건: 서로 다른 3일에 할 일 1개 이상 완료
+    const days = await getData(TODO_COMPLETE_DAYS_KEY) || [];
+    if (new Set(days).size >= 3) {
+      localStorage.setItem(PHASE_KEY, '2');
+      showUnlockBanner(2);
     }
   }
 }
