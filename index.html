@@ -3210,7 +3210,11 @@ async function loginWithGoogle() {
 }
 
 function clearLocalData() {
-  const preserve = new Set(['darkmode_enabled']);
+  // 앱 상태(온보딩·페이즈·위젯설정)는 유지, 개인 데이터만 삭제
+  const preserve = new Set([
+    'darkmode_enabled', 'onboarding_done', 'app_phase',
+    'widget_visibility_b', 'widget_order_v1'
+  ]);
   Object.keys(localStorage).filter(k => !preserve.has(k)).forEach(k => localStorage.removeItem(k));
 }
 
@@ -3268,9 +3272,9 @@ auth.onAuthStateChanged(async (user) => {
     document.body.classList.remove('logged-out');
     await syncFromCloud();
   } else {
-    clearLocalData();
+    // clearLocalData()는 명시적 로그아웃(logoutUser)에서만 호출
+    // 페이지 로드 시에는 앱 상태(온보딩 등)를 유지한 채로 빈 상태 렌더링
     document.body.classList.add('logged-out');
-    // 빈 상태로 위젯 재렌더링
     await Promise.all([loadAffirmations(), loadVision(), loadTodos(), loadMonthlyTodos(), loadDone(), loadBooks(), loadExpenses(), loadYoutube(), loadGratitude(), loadHabits(), loadMemo()]);
     await initPhase();
   }
