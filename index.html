@@ -63,6 +63,14 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+    body.logged-out .panel input,
+    body.logged-out .panel textarea,
+    body.logged-out .panel .add-btn,
+    body.logged-out .panel .del-btn,
+    body.logged-out .panel .text-input {
+      pointer-events: none;
+      opacity: 0.35;
+    }
 
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(18px); }
@@ -3201,9 +3209,16 @@ async function loginWithGoogle() {
   catch(e) { console.error('로그인 오류:', e); }
 }
 
+function clearLocalData() {
+  const preserve = new Set(['darkmode_enabled']);
+  Object.keys(localStorage).filter(k => !preserve.has(k)).forEach(k => localStorage.removeItem(k));
+}
+
 async function logoutUser() {
-  try { await auth.signOut(); }
-  catch(e) { console.error('로그아웃 오류:', e); }
+  try {
+    clearLocalData();
+    await auth.signOut();
+  } catch(e) { console.error('로그아웃 오류:', e); }
 }
 
 async function syncFromCloud() {
@@ -3249,7 +3264,16 @@ function handleAuthClick() {
 auth.onAuthStateChanged(async (user) => {
   currentUser = user;
   updateAuthUI();
-  if (user) await syncFromCloud();
+  if (user) {
+    document.body.classList.remove('logged-out');
+    await syncFromCloud();
+  } else {
+    clearLocalData();
+    document.body.classList.add('logged-out');
+    // 빈 상태로 위젯 재렌더링
+    await Promise.all([loadAffirmations(), loadVision(), loadTodos(), loadMonthlyTodos(), loadDone(), loadBooks(), loadExpenses(), loadYoutube(), loadGratitude(), loadHabits(), loadMemo()]);
+    await initPhase();
+  }
 });
 
 init();
