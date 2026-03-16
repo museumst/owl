@@ -2132,21 +2132,40 @@ async function addTodo() {
 async function toggleTodo(idx) {
   const key=`todos_${viewDate}`; const todos=await getData(key)||[];
   todos[idx].done=!todos[idx].done; await setData(key,todos); renderTodos(todos);
-  // 완료 처리 시 날짜 기록 → 페이즈 업그레이드 체크
+  const days = await getData(TODO_COMPLETE_DAYS_KEY) || [];
   if (todos[idx].done) {
-    const days = await getData(TODO_COMPLETE_DAYS_KEY) || [];
+    // 완료 처리 시 날짜 기록 → 페이즈 업그레이드 체크
     if (!days.includes(viewDate)) {
       days.push(viewDate);
       await setData(TODO_COMPLETE_DAYS_KEY, days);
     }
     await checkPhaseUpgrade();
     applyPhase();
+  } else {
+    // 체크 해제 시 해당 날짜에 완료된 항목이 없으면 날짜 기록 제거
+    const hasCompleted = todos.some(t => t.done);
+    if (!hasCompleted) {
+      const filtered = days.filter(d => d !== viewDate);
+      if (filtered.length !== days.length) {
+        await setData(TODO_COMPLETE_DAYS_KEY, filtered);
+      }
+    }
   }
   updateTodoPhaseHint();
 }
 async function deleteTodo(idx) {
   const key=`todos_${viewDate}`; const todos=await getData(key)||[];
   todos.splice(idx,1); await setData(key,todos); renderTodos(todos);
+  // 삭제 후 해당 날짜에 완료된 항목이 없으면 완료 날짜 기록에서 제거
+  const hasCompleted = todos.some(t => t.done);
+  if (!hasCompleted) {
+    const days = await getData(TODO_COMPLETE_DAYS_KEY) || [];
+    const filtered = days.filter(d => d !== viewDate);
+    if (filtered.length !== days.length) {
+      await setData(TODO_COMPLETE_DAYS_KEY, filtered);
+    }
+  }
+  updateTodoPhaseHint();
 }
 
 /* ================================================================
