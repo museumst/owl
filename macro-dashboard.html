@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매크로 대시보드</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --green: #00d17a;
+    --red: #ff4757;
+    --yellow: #ffd32a;
+    --blue: #4fc3f7;
+    --text: #e8e8e8;
+    --muted: #666;
+    --dim: #333;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 16px;
+    min-height: 100vh;
+  }
+
+  /* ── 헤더 ── */
+  .header {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--green);
+    letter-spacing: 0.1em;
+  }
+  .header-time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .refresh-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    background: transparent;
+    border: 1px solid var(--green);
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { background: var(--green); color: var(--bg); }
+  .refresh-btn.loading { opacity: 0.5; pointer-events: none; }
+
+  /* ── 레이아웃 ── */
+  .main { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+
+  .section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-title:first-of-type { margin-top: 0; }
+
+  /* ── 지표 그리드 ── */
+  .ticker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .ticker-card {
+    background: var(--surface);
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .ticker-card:hover { background: var(--surface2); }
+  .ticker-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--dim);
+    transition: background 0.3s;
+  }
+  .ticker-card.up::before { background: var(--green); }
+  .ticker-card.down::before { background: var(--red); }
+
+  .ticker-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .ticker-name {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .ticker-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .ticker-change {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ticker-change.up { color: var(--green); }
+  .ticker-change.down { color: var(--red); }
+  .ticker-change.flat { color: var(--muted); }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 2px;
+    height: 22px;
+    width: 100px;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* ── Fear & Greed ── */
+  .fg-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .fg-gauge {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+  }
+  .fg-gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .fg-gauge-val {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 32px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .fg-info { flex: 1; }
+  .fg-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .fg-status {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .fg-desc {
+    font-size: 15px;
+    color: #888;
+    line-height: 1.6;
+  }
+  .fg-bar-wrap {
+    margin-top: 16px;
+  }
+  .fg-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+  .fg-bar {
+    height: 6px;
+    background: linear-gradient(90deg, var(--red) 0%, var(--yellow) 50%, var(--green) 100%);
+    border-radius: 3px;
+    position: relative;
+  }
+  .fg-bar-marker {
+    position: absolute;
+    top: -4px;
+    width: 2px;
+    height: 14px;
+    background: #fff;
+    transform: translateX(-50%);
+    border-radius: 1px;
+    transition: left 1s ease;
+  }
+
+  /* ── 캘린더 ── */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .cal-item {
+    background: var(--surface);
+    padding: 16px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .cal-date {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 60px;
+    padding-top: 2px;
+  }
+  .cal-body { flex: 1; }
+  .cal-event {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .cal-meta {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .cal-importance {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .imp-high { background: var(--red); }
+  .imp-med { background: var(--yellow); }
+  .imp-low { background: var(--dim); }
+
+  /* ── 실적 테이블 ── */
+  .earnings-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+  }
+  .earnings-table th {
+    background: var(--surface);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+  .earnings-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--dim);
+    font-size: 15px;
+    color: #ccc;
+  }
+  .earnings-table tr:last-child td { border-bottom: none; }
+  .earnings-table tr:hover td { background: var(--surface); }
+  .earnings-table td:first-child {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .earnings-ticker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--blue);
+    font-weight: 600;
+  }
+  .beat { color: var(--green); }
+  .miss { color: var(--red); }
+  .pending { color: var(--muted); }
+
+  /* ── 마켓 요약 ── */
+  .summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 20px 24px;
+  }
+  .summary-card.warn { border-left-color: var(--yellow); }
+  .summary-card.danger { border-left-color: var(--red); }
+  .summary-card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+  }
+  .summary-card-text {
+    font-size: 15px;
+    color: #aaa;
+    line-height: 1.7;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  .error-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--red);
+  }
+
+  /* ── 업데이트 시간 ── */
+  .update-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .dot-live {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── 탭 ── */
+  .tab-row {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    padding: 8px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+    background: none;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+  }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab:hover { color: var(--text); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  @media (max-width: 768px) {
+    .main { padding: 16px; }
+    .header { padding: 14px 16px; }
+    .three-col { grid-template-columns: 1fr; }
+    .fg-card { flex-direction: column; }
+    .chart-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ── 차트 모달 ── */
+  .chart-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.78);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .chart-modal.open { display: flex; }
+  .chart-modal-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 820px;
+  }
+  .chart-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .chart-modal-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .chart-modal-symbol {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--green);
+  }
+  .chart-modal-name {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .chart-modal-controls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .chart-range-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 5px 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .chart-range-btn:hover { color: var(--text); border-color: var(--border); }
+  .chart-range-btn.active { color: var(--green); border-color: var(--green); }
+  .chart-close-btn {
+    font-size: 17px;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: color 0.15s;
+    line-height: 1;
+  }
+  .chart-close-btn:hover { color: var(--text); }
+  .chart-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+  .chart-stat {
+    background: var(--surface2);
+    padding: 14px 18px;
+  }
+  .chart-stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .chart-stat-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .chart-container {
+    padding: 16px 8px 4px;
+    height: 270px;
+  }
+  .chart-loading {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    padding-top: 90px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">MACRO WATCH</div>
+    <div class="header-time" id="headerTime">--</div>
+  </div>
+  <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">↻ REFRESH</button>
+</div>
+
+<div class="main">
+
+  <!-- ── 주요 지수 ── -->
+  <div class="section-title">주요 지수</div>
+  <div class="ticker-grid" id="indexGrid">
+    <div class="ticker-card"><div class="ticker-label">S&P 500</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">NASDAQ</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">DOW JONES</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">KOSPI</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">VIX</div><div class="skeleton"></div></div>
+  </div>
+
+  <!-- ── 핵심 지표 ── -->
+  <div class="section-title">핵심 거시 지표</div>
+  <div class="ticker-grid" id="macroGrid">
+    <div class="ticker-card"><div class="ticker-label">DXY (달러 인덱스)</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">USD/KRW (원/달러)</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">US 10Y 국채금리</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">WTI 원유</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">구리 (경기선행)</div><div class="skeleton"></div></div>
+    <div class="ticker-card"><div class="ticker-label">금</div><div class="skeleton"></div></div>
+  </div>
+
+  <!-- ── Fear & Greed ── -->
+  <div class="section-title">시장 심리</div>
+  <div class="three-col">
+    <div class="fg-card" id="fgCard" style="grid-column: span 2;">
+      <div class="fg-gauge">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#222" stroke-width="10"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#333" stroke-width="10"
+            stroke-dasharray="314" stroke-dashoffset="0" stroke-linecap="round" id="fgArc"/>
+        </svg>
+        <div class="fg-gauge-val" id="fgVal">--</div>
+      </div>
+      <div class="fg-info">
+        <div class="fg-label">FEAR & GREED INDEX</div>
+        <div class="fg-status" id="fgStatus">로딩 중...</div>
+        <div class="fg-desc" id="fgDesc">CNN에서 발표하는 시장 심리 지수입니다. 0에 가까울수록 극단적 공포, 100에 가까울수록 극단적 탐욕을 의미합니다.</div>
+        <div class="fg-bar-wrap">
+          <div class="fg-bar-labels">
+            <span>극단적 공포</span><span>공포</span><span>중립</span><span>탐욕</span><span>극단적 탐욕</span>
+          </div>
+          <div class="fg-bar">
+            <div class="fg-bar-marker" id="fgMarker" style="left: 50%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="summary-card" id="marketMood" style="align-self: stretch; display: flex; flex-direction: column; justify-content: center;">
+      <div class="summary-card-label">AI 시장 요약</div>
+      <div class="summary-card-text" id="moodText">지표를 불러오는 중입니다...</div>
+    </div>
+  </div>
+
+  <!-- ── 경제지표 캘린더 ── -->
+  <div class="section-title">이번 주 경제지표 일정</div>
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab('weekly')">이번 주</button>
+    <button class="tab" onclick="switchTab('monthly')">이번 달 주요 일정</button>
+  </div>
+  <div class="tab-content active" id="tab-weekly">
+    <div class="calendar-grid" id="weeklyCalendar">
+      <div class="cal-item"><div class="skeleton" style="width:100%"></div></div>
+    </div>
+  </div>
+  <div class="tab-content" id="tab-monthly">
+    <div class="calendar-grid" id="monthlyCalendar">
+      <div class="cal-item"><div class="skeleton" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <!-- ── 기업 실적 ── -->
+  <div class="section-title">이번 주 주요 기업 실적 발표</div>
+  <table class="earnings-table" id="earningsTable">
+    <thead>
+      <tr>
+        <th>날짜</th>
+        <th>기업</th>
+        <th>발표 시간</th>
+        <th>EPS 예상</th>
+        <th>결과</th>
+      </tr>
+    </thead>
+    <tbody id="earningsBody">
+      <tr><td colspan="5" style="text-align:center; padding:24px; color:var(--muted)">로딩 중...</td></tr>
+    </tbody>
+  </table>
+
+  <div class="update-row">
+    <div class="dot-live"></div>
+    <span id="lastUpdate">--</span>
+  </div>
+
+</div>
+
+<script>
+// ── 유틸 ──────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const fmt = (n, dec=2) => n != null ? Number(n).toLocaleString('en-US', {minimumFractionDigits: dec, maximumFractionDigits: dec}) : '--';
+const fmtPct = n => n != null ? (n > 0 ? '+' : '') + Number(n).toFixed(2) + '%' : '--';
+
+function updateTime() {
+  const now = new Date();
+  $('headerTime').textContent = now.toLocaleString('ko-KR', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// ── Yahoo Finance Proxy (corsproxy.io) ────────────────
+async function fetchYahoo(symbol) {
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
+    const proxy = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
+    const parsed = await res.json();
+    const meta = parsed.chart.result[0].meta;
+    const price = meta.regularMarketPrice;
+    const prev = meta.previousClose || meta.chartPreviousClose;
+    const change = price - prev;
+    const changePct = (change / prev) * 100;
+    return { price, change, changePct, symbol };
+  } catch(e) {
+    return { price: null, change: null, changePct: null, symbol, error: true };
+  }
+}
+
+// ── 카드 렌더 ──────────────────────────────────────────
+function renderCard(container, items) {
+  container.innerHTML = '';
+  items.forEach(item => {
+    const { label, name, data, prefix='', suffix='', decimals=2, symbol } = item;
+    const card = document.createElement('div');
+    card.className = 'ticker-card';
+    if (symbol) card.addEventListener('click', () => openChart(symbol, label, name, decimals));
+
+    const isUp = data && data.changePct > 0;
+    const isDown = data && data.changePct < 0;
+    if (!data?.error) card.classList.add(isUp ? 'up' : isDown ? 'down' : '');
+
+    const valueStr = data?.error ? '─' :
+      data?.price != null ? prefix + fmt(data.price, decimals) + suffix : '--';
+
+    const changeClass = isUp ? 'up' : isDown ? 'down' : 'flat';
+    const arrow = isUp ? '▲' : isDown ? '▼' : '─';
+    const changeStr = data?.error ? '<span class="error-text">조회 실패</span>' :
+      `<span class="ticker-change ${changeClass}">${arrow} ${fmtPct(data?.changePct)} (${data?.change > 0 ? '+' : ''}${fmt(data?.change, decimals)})</span>`;
+
+    card.innerHTML = `
+      <div class="ticker-label">${label}</div>
+      ${name ? `<div class="ticker-name">${name}</div>` : ''}
+      <div class="ticker-value">${valueStr}</div>
+      ${changeStr}
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ── 지수 로드 ──────────────────────────────────────────
+async function loadIndexes() {
+  const symbols = [
+    { symbol: '^GSPC', label: 'S&P 500', name: '미국 대형주' },
+    { symbol: '^IXIC', label: 'NASDAQ', name: '미국 기술주' },
+    { symbol: '^DJI',  label: 'DOW JONES', name: '미국 산업주' },
+    { symbol: '^KS11', label: 'KOSPI', name: '한국 종합주가' },
+    { symbol: '^VIX',  label: 'VIX 공포지수', name: '변동성 지수', suffix: '' },
+  ];
+  const results = await Promise.all(symbols.map(s => fetchYahoo(s.symbol).then(d => ({...s, data: d}))));
+  const grid = $('indexGrid');
+  renderCard(grid, results.map(r => ({
+    label: r.label, name: r.name, data: r.data, symbol: r.symbol,
+    decimals: r.symbol === '^VIX' ? 2 : (r.symbol === '^KS11' ? 0 : 2)
+  })));
+}
+
+// ── 거시 지표 로드 ─────────────────────────────────────
+async function loadMacro() {
+  const symbols = [
+    { symbol: 'DX-Y.NYB', label: 'DXY (달러 인덱스)', name: '달러 강세/약세 척도' },
+    { symbol: 'KRW=X',    label: 'USD/KRW', name: '원/달러 환율', decimals: 1 },
+    { symbol: '^TNX',     label: 'US 10Y 국채금리', name: '미국 10년물', suffix: '%' },
+    { symbol: 'CL=F',     label: 'WTI 원유', name: '서부텍사스산 원유', prefix: '$' },
+    { symbol: 'HG=F',     label: '구리', name: '경기 선행지표', prefix: '$', decimals: 3 },
+    { symbol: 'GC=F',     label: '금', name: '안전자산', prefix: '$', decimals: 1 },
+  ];
+  const results = await Promise.all(symbols.map(s => fetchYahoo(s.symbol).then(d => ({...s, data: d}))));
+  const grid = $('macroGrid');
+  renderCard(grid, results.map(r => ({
+    label: r.label, name: r.name, data: r.data, symbol: r.symbol,
+    prefix: r.prefix || '', suffix: r.suffix || '',
+    decimals: r.decimals ?? 2
+  })));
+}
+
+// ── Fear & Greed ───────────────────────────────────────
+async function loadFearGreed() {
+  try {
+    // alternative.me는 CORS 지원 → 직접 호출
+    const altUrl = 'https://api.alternative.me/fng/?limit=1';
+    const res = await fetch(altUrl, { signal: AbortSignal.timeout(8000) });
+    const parsed = await res.json();
+    const val = parseInt(parsed.data[0].value);
+    const classification = parsed.data[0].value_classification;
+
+    // 게이지 업데이트
+    const arc = $('fgArc');
+    const circumference = 314;
+    const offset = circumference - (val / 100) * circumference;
+    arc.style.strokeDashoffset = offset;
+
+    // 색상
+    let color, korStatus;
+    if (val <= 25) { color = '#ff4757'; korStatus = '극단적 공포 😱'; }
+    else if (val <= 45) { color = '#ff6b35'; korStatus = '공포 😨'; }
+    else if (val <= 55) { color = '#ffd32a'; korStatus = '중립 😐'; }
+    else if (val <= 75) { color = '#7bed9f'; korStatus = '탐욕 😏'; }
+    else { color = '#00d17a'; korStatus = '극단적 탐욕 🤑'; }
+
+    arc.style.stroke = color;
+    $('fgVal').textContent = val;
+    $('fgVal').style.color = color;
+    $('fgStatus').textContent = korStatus;
+    $('fgStatus').style.color = color;
+    $('fgMarker').style.left = val + '%';
+
+    // 마켓 무드 요약
+    updateMoodText(val, korStatus);
+  } catch(e) {
+    $('fgVal').textContent = '─';
+    $('fgStatus').textContent = '조회 실패';
+    $('moodText').textContent = '시장 심리 데이터를 불러오지 못했습니다.';
+  }
+}
+
+function updateMoodText(val, status) {
+  let text = '';
+  if (val <= 25) {
+    text = '시장이 극단적 공포 상태입니다. 투자자들이 패닉 매도 중일 수 있으며, 역발상 투자자들은 매수 기회로 볼 수 있는 구간입니다. 단, 추가 하락 가능성도 존재합니다.';
+    $('marketMood').className = 'summary-card danger';
+  } else if (val <= 45) {
+    text = '시장이 공포 심리 우위에 있습니다. 불확실성이 높고 투자자들이 리스크를 회피하는 경향이 있습니다. 저가 매수 기회를 탐색할 수 있는 구간이지만 신중한 접근이 필요합니다.';
+    $('marketMood').className = 'summary-card warn';
+  } else if (val <= 55) {
+    text = '시장 심리가 중립 상태입니다. 공포도 탐욕도 아닌 관망세가 우세합니다. 개별 지표와 실적 중심으로 판단이 필요한 시기입니다.';
+    $('marketMood').className = 'summary-card';
+  } else if (val <= 75) {
+    text = '시장이 탐욕 국면에 진입했습니다. 투자자들의 위험 선호도가 높아진 상태로, 자산 가격이 고평가될 수 있습니다. 포트폴리오 점검과 분할 매도 전략을 고려할 수 있습니다.';
+    $('marketMood').className = 'summary-card warn';
+  } else {
+    text = '극단적 탐욕 국면입니다. 시장이 과열 신호를 보내고 있습니다. 역사적으로 이 구간에서 조정이 발생한 사례가 많습니다. 신규 진입보다는 리밸런싱을 검토할 시점입니다.';
+    $('marketMood').className = 'summary-card danger';
+  }
+  $('moodText').textContent = text;
+}
+
+// ── 경제 캘린더 ────────────────────────────────────────
+function getThisWeekDates() {
+  const now = new Date();
+  const day = now.getDay();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  const dates = [];
+  for (let i = 0; i < 5; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    dates.push(d);
+  }
+  return dates;
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit', weekday: 'short' });
+}
+
+// 실제 경제 캘린더 - Investing.com 스타일로 하드코딩 (주요 정기 지표)
+function buildEconomicCalendar() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const weekDates = getThisWeekDates();
+
+  // 정기 발표 이벤트 (매월/매주 반복되는 주요 지표)
+  const weeklyEvents = [
+    { dayOfWeek: 1, label: '월요일', event: '미국 ISM 제조업 PMI', country: '🇺🇸', importance: 'high', note: '50 이상 = 경기 확장' },
+    { dayOfWeek: 2, label: '화요일', event: '미국 JOLTS 구인 건수', country: '🇺🇸', importance: 'med', note: '고용 시장 강도 측정' },
+    { dayOfWeek: 3, label: '수요일', event: '미국 ADP 민간 고용', country: '🇺🇸', importance: 'high', note: '공식 고용보고서 전 선행지표' },
+    { dayOfWeek: 3, label: '수요일', event: 'FOMC 의사록 / Fed 위원 발언', country: '🇺🇸', importance: 'high', note: '금리 방향성 핵심 단서' },
+    { dayOfWeek: 4, label: '목요일', event: '미국 신규 실업급여 청구', country: '🇺🇸', importance: 'med', note: '매주 발표, 고용 동향 파악' },
+    { dayOfWeek: 4, label: '목요일', event: 'ECB 통화정책 발표 (해당 주)', country: '🇪🇺', importance: 'high', note: '유럽 금리 결정' },
+    { dayOfWeek: 5, label: '금요일', event: '미국 비농업 고용(NFP)', country: '🇺🇸', importance: 'high', note: '매월 첫째 주 금요일' },
+    { dayOfWeek: 5, label: '금요일', event: '미국 소비자심리지수(UoM)', country: '🇺🇸', importance: 'med', note: '매월 둘째 주 금요일' },
+  ];
+
+  const monthlyEvents = [
+    { week: 1, event: '미국 비농업 고용(NFP) + 실업률', country: '🇺🇸', importance: 'high', note: '매월 첫째 주 금요일, 가장 중요한 고용지표' },
+    { week: 2, event: '미국 CPI (소비자물가지수)', country: '🇺🇸', importance: 'high', note: '인플레이션 핵심 지표, Fed 금리결정에 직결' },
+    { week: 2, event: '미국 PPI (생산자물가지수)', country: '🇺🇸', importance: 'med', note: 'CPI 선행지표 역할' },
+    { week: 2, event: '미국 소매판매', country: '🇺🇸', importance: 'high', note: '소비 동향, GDP의 70%가 소비' },
+    { week: 3, event: '중국 GDP · 산업생산 · 소매판매', country: '🇨🇳', importance: 'high', note: '분기별 발표, 글로벌 수요 가늠자' },
+    { week: 3, event: '미국 산업생산 · 설비가동률', country: '🇺🇸', importance: 'med', note: '제조업 경기 판단' },
+    { week: 3, event: '중국 PMI (제조업 · 서비스업)', country: '🇨🇳', importance: 'high', note: '매월 말 발표, 글로벌 경기 선행지표' },
+    { week: 4, event: '미국 PCE (개인소비지출 물가)', country: '🇺🇸', importance: 'high', note: 'Fed가 가장 중시하는 인플레이션 지표' },
+    { week: 4, event: '미국 GDP 성장률 (속보/잠정/확정)', country: '🇺🇸', importance: 'high', note: '분기별, 경제 규모와 성장 속도' },
+    { week: 4, event: 'FOMC 금리결정 (해당 월)', country: '🇺🇸', importance: 'high', note: '연 8회, 시장 전체에 영향' },
+  ];
+
+  // 이번 주 캘린더 렌더
+  const weeklyHtml = weekDates.map(date => {
+    const dow = date.getDay();
+    const dayEvents = weeklyEvents.filter(e => e.dayOfWeek === dow);
+    if (dayEvents.length === 0) return '';
+    return dayEvents.map(e => `
+      <div class="cal-item">
+        <div class="cal-importance imp-${e.importance}"></div>
+        <div class="cal-date">${formatDate(date)}</div>
+        <div class="cal-body">
+          <div class="cal-event">${e.country} ${e.event}</div>
+          <div class="cal-meta">${e.note}</div>
+        </div>
+      </div>
+    `).join('');
+  }).join('');
+
+  $('weeklyCalendar').innerHTML = weeklyHtml || '<div class="cal-item"><div class="cal-body"><div class="cal-event" style="color:var(--muted)">이번 주 주요 일정 없음</div></div></div>';
+
+  // 월간 캘린더 렌더
+  const monthlyHtml = monthlyEvents.map(e => `
+    <div class="cal-item">
+      <div class="cal-importance imp-${e.importance}"></div>
+      <div class="cal-date">${month}월<br>${e.week}주차</div>
+      <div class="cal-body">
+        <div class="cal-event">${e.country} ${e.event}</div>
+        <div class="cal-meta">${e.note}</div>
+      </div>
+    </div>
+  `).join('');
+
+  $('monthlyCalendar').innerHTML = monthlyHtml;
+}
+
+// ── 기업 실적 ──────────────────────────────────────────
+function buildEarningsTable() {
+  // 이번 주 발표 예정 주요 기업 (실제 API 없이 대표적 예시 + 구조 설명)
+  const now = new Date();
+  const weekDates = getThisWeekDates();
+
+  const earnings = [
+    { date: weekDates[0], ticker: 'AAPL', name: 'Apple Inc.', time: '장 마감 후', epsEst: '$2.34', result: 'pending' },
+    { date: weekDates[0], ticker: 'MSFT', name: 'Microsoft', time: '장 마감 후', epsEst: '$3.12', result: 'pending' },
+    { date: weekDates[1], ticker: 'GOOGL', name: 'Alphabet', time: '장 마감 후', epsEst: '$2.01', result: 'pending' },
+    { date: weekDates[2], ticker: 'AMZN', name: 'Amazon', time: '장 마감 후', epsEst: '$1.47', result: 'pending' },
+    { date: weekDates[2], ticker: 'META', name: 'Meta Platforms', time: '장 마감 후', epsEst: '$5.23', result: 'pending' },
+    { date: weekDates[3], ticker: 'NVDA', name: 'NVIDIA', time: '장 마감 후', epsEst: '$0.84', result: 'pending' },
+    { date: weekDates[4], ticker: 'JPM', name: 'JPMorgan Chase', time: '장 시작 전', epsEst: '$4.61', result: 'pending' },
+  ];
+
+  const resultLabel = { beat: '<span class="beat">▲ 어닝 서프라이즈</span>', miss: '<span class="miss">▼ 어닝 쇼크</span>', pending: '<span class="pending">발표 예정</span>' };
+
+  $('earningsBody').innerHTML = earnings.map(e => `
+    <tr>
+      <td>${formatDate(e.date)}</td>
+      <td><span class="earnings-ticker">${e.ticker}</span><br><span style="font-size:13px; color:var(--muted)">${e.name}</span></td>
+      <td>${e.time}</td>
+      <td style="font-family:'IBM Plex Mono',monospace">${e.epsEst}</td>
+      <td>${resultLabel[e.result]}</td>
+    </tr>
+  `).join('');
+}
+
+// ── 탭 전환 ────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  $('tab-' + name).classList.add('active');
+}
+
+// ── 전체 로드 ──────────────────────────────────────────
+async function loadAll() {
+  const btn = $('refreshBtn');
+  btn.classList.add('loading');
+  btn.textContent = '로딩 중...';
+
+  await Promise.all([
+    loadIndexes(),
+    loadMacro(),
+    loadFearGreed(),
+  ]);
+
+  buildEconomicCalendar();
+  buildEarningsTable();
+
+  $('lastUpdate').textContent = '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
+  btn.classList.remove('loading');
+  btn.textContent = '↻ REFRESH';
+}
+
+// 30분마다 자동 갱신
+setInterval(loadAll, 30 * 60 * 1000);
+
+// 초기 로드
+loadAll();
+
+// ── 차트 모달 ──────────────────────────────────────────
+const chartState = { symbol: null, label: '', name: '', decimals: 2, range: '1mo' };
+
+function openChart(symbol, label, name, decimals) {
+  chartState.symbol = symbol;
+  chartState.label = label;
+  chartState.name = name || '';
+  chartState.decimals = decimals ?? 2;
+  $('chartSymbol').textContent = label;
+  $('chartName').textContent = name || '';
+  $('chartModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  updateRangeBtns();
+  loadChartData();
+}
+
+function closeChart() {
+  $('chartModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleModalClick(e) {
+  if (e.target === $('chartModal')) closeChart();
+}
+
+function setChartRange(range) {
+  chartState.range = range;
+  updateRangeBtns();
+  loadChartData();
+}
+
+function updateRangeBtns() {
+  document.querySelectorAll('.chart-range-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.range === chartState.range);
+  });
+}
+
+async function loadChartData() {
+  $('chartContainer').innerHTML = '<div class="chart-loading">로딩 중...</div>';
+  $('chartStats').innerHTML = '';
+  const { symbol, range, decimals } = chartState;
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=${range}`;
+    const proxy = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
+    const parsed = await res.json();
+    const result = parsed.chart.result[0];
+    const q = result.indicators.quote[0];
+    const data = result.timestamp.map((t, i) => ({
+      date: new Date(t * 1000),
+      close: q.close[i],
+      high: q.high[i],
+      low: q.low[i]
+    })).filter(d => d.close != null);
+    if (data.length < 2) throw new Error('데이터 부족');
+    renderChartStats(data, decimals);
+    renderSVGChart(data, decimals);
+  } catch(e) {
+    $('chartContainer').innerHTML = '<div class="chart-loading" style="color:#ff4757">데이터를 불러오지 못했습니다</div>';
+  }
+}
+
+function renderChartStats(data, decimals) {
+  const first = data[0].close;
+  const last = data[data.length - 1].close;
+  const pct = (last - first) / first * 100;
+  const high = Math.max(...data.map(d => d.high ?? d.close));
+  const low  = Math.min(...data.map(d => d.low  ?? d.close));
+  const color = pct >= 0 ? '#00d17a' : '#ff4757';
+  const arrow = pct >= 0 ? '▲' : '▼';
+  $('chartStats').innerHTML = `
+    <div class="chart-stat">
+      <div class="chart-stat-label">현재가</div>
+      <div class="chart-stat-value">${fmt(last, decimals)}</div>
+    </div>
+    <div class="chart-stat">
+      <div class="chart-stat-label">기간 변동</div>
+      <div class="chart-stat-value" style="color:${color}">${arrow} ${Math.abs(pct).toFixed(2)}%</div>
+    </div>
+    <div class="chart-stat">
+      <div class="chart-stat-label">기간 고점</div>
+      <div class="chart-stat-value">${fmt(high, decimals)}</div>
+    </div>
+    <div class="chart-stat">
+      <div class="chart-stat-label">기간 저점</div>
+      <div class="chart-stat-value">${fmt(low, decimals)}</div>
+    </div>`;
+}
+
+function renderSVGChart(data, decimals) {
+  const W = 700, H = 230;
+  const PAD = { top: 16, right: 74, bottom: 28, left: 8 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+  const closes = data.map(d => d.close);
+  const isUp = closes[closes.length - 1] >= closes[0];
+  const color = isUp ? '#00d17a' : '#ff4757';
+  const minRaw = Math.min(...closes), maxRaw = Math.max(...closes);
+  const pad = (maxRaw - minRaw) * 0.1 || maxRaw * 0.02;
+  const minY = minRaw - pad, maxY = maxRaw + pad, ySpan = maxY - minY;
+  const n = data.length;
+  const xFn = i => PAD.left + (i / (n - 1)) * cW;
+  const yFn = v => PAD.top + cH - ((v - minY) / ySpan) * cH;
+
+  const pts = closes.map((v, i) => `${xFn(i).toFixed(1)},${yFn(v).toFixed(1)}`);
+  const line = `M ${pts.join(' L ')}`;
+  const area = `M ${xFn(0).toFixed(1)},${(PAD.top + cH).toFixed(1)} L ${pts.join(' L ')} L ${xFn(n-1).toFixed(1)},${(PAD.top + cH).toFixed(1)} Z`;
+
+  let grids = '', ylabels = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = minY + ySpan * i / 4;
+    const yp = yFn(v).toFixed(1);
+    grids   += `<line x1="${PAD.left}" y1="${yp}" x2="${PAD.left + cW}" y2="${yp}" stroke="#202020" stroke-width="1"/>`;
+    ylabels += `<text x="${PAD.left + cW + 6}" y="${yp}" dominant-baseline="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#555">${fmt(v, decimals)}</text>`;
+  }
+
+  let xlabels = '';
+  const step = Math.max(1, Math.floor(n / 5));
+  const shown = new Set();
+  for (let i = 0; i < n; i += step) {
+    const d = data[i].date;
+    const s = `${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+    xlabels += `<text x="${xFn(i).toFixed(1)}" y="${H - 5}" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#555">${s}</text>`;
+    shown.add(i);
+  }
+  if (!shown.has(n - 1)) {
+    const d = data[n-1].date;
+    const s = `${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+    xlabels += `<text x="${xFn(n-1).toFixed(1)}" y="${H - 5}" text-anchor="end" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#555">${s}</text>`;
+  }
+
+  $('chartContainer').innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+    <defs>
+      <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${grids}
+    <path d="${area}" fill="url(#cg)"/>
+    <path d="${line}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+    ${ylabels}
+    ${xlabels}
+  </svg>`;
+}
+
+// ESC 키로 모달 닫기
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChart(); });
+</script>
+<!-- ── 차트 모달 ── -->
+<div id="chartModal" class="chart-modal" onclick="handleModalClick(event)">
+  <div class="chart-modal-inner">
+    <div class="chart-modal-header">
+      <div class="chart-modal-title">
+        <span class="chart-modal-symbol" id="chartSymbol"></span>
+        <span class="chart-modal-name" id="chartName"></span>
+      </div>
+      <div class="chart-modal-controls">
+        <button class="chart-range-btn active" data-range="1mo" onclick="setChartRange('1mo')">1M</button>
+        <button class="chart-range-btn" data-range="3mo" onclick="setChartRange('3mo')">3M</button>
+        <button class="chart-range-btn" data-range="6mo" onclick="setChartRange('6mo')">6M</button>
+        <button class="chart-range-btn" data-range="1y" onclick="setChartRange('1y')">1Y</button>
+        <button class="chart-close-btn" onclick="closeChart()">✕</button>
+      </div>
+    </div>
+    <div class="chart-stats" id="chartStats"></div>
+    <div class="chart-container" id="chartContainer">
+      <div class="chart-loading">로딩 중...</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
