@@ -499,10 +499,10 @@
     .websearch-engine-btn:hover { border-color: var(--accent-light); }
     .websearch-engine-btn .arrow { font-size: 9px; color: var(--text-muted); }
     .websearch-engine-dropdown {
-      position: absolute; top: calc(100% + 4px); right: 0;
+      position: fixed;
       background: var(--bg-panel); border: 1px solid var(--border);
       border-radius: var(--radius-sm); box-shadow: var(--shadow);
-      z-index: 500; min-width: 120px; overflow: hidden;
+      z-index: 9000; min-width: 120px; overflow: hidden;
       display: none;
     }
     .websearch-engine-dropdown.open { display: block; animation: dropDown 0.15s ease; }
@@ -512,8 +512,8 @@
     }
     .websearch-engine-option:hover { background: var(--bg-input); }
     .websearch-engine-option.active { color: var(--accent); font-weight: 500; }
+    .websearch-engine-option.highlighted { background: var(--bg-input); color: var(--accent); }
     .websearch-engine-wrap { position: relative; }
-    #panel-websearch { z-index: 10; }
 
     /* 기본 검색엔진 설정 모달 */
     #search-engine-modal-overlay {
@@ -1228,7 +1228,7 @@
                  placeholder="검색어를 입력하세요"
                  onkeydown="if(event.key==='Enter' && !event.isComposing) doWebSearch()">
           <div class="websearch-engine-wrap">
-            <button class="websearch-engine-btn" id="websearch-engine-btn" onclick="toggleEngineDropdown()">
+            <button class="websearch-engine-btn" id="websearch-engine-btn" onclick="toggleEngineDropdown()" onkeydown="handleEngineBtnKeydown(event)">
               <span id="websearch-engine-label">구글</span>
               <span class="arrow">▼</span>
             </button>
@@ -2812,6 +2812,7 @@ const SEARCH_ENGINES = [
 ];
 const SEARCH_ENGINE_KEY = 'default_search_engine';
 let _activeEngineId = null; // 이번 검색에만 쓸 엔진 (null이면 기본값 사용)
+let _highlightedEngineIdx = -1;
 
 function getDefaultEngineId() {
   return localStorage.getItem(SEARCH_ENGINE_KEY) || 'google';
@@ -2838,14 +2839,58 @@ function updateEngineBtnLabel(id) {
 
 function toggleEngineDropdown() {
   const dd = document.getElementById('websearch-engine-dropdown');
-  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    dd.classList.remove('open');
+  } else {
+    const btn = document.getElementById('websearch-engine-btn');
+    const rect = btn.getBoundingClientRect();
+    dd.style.top  = (rect.bottom + 4) + 'px';
+    dd.style.right = (window.innerWidth - rect.right) + 'px';
+    dd.classList.add('open');
+    _highlightedEngineIdx = SEARCH_ENGINES.findIndex(e => e.id === (_activeEngineId || getDefaultEngineId()));
+    highlightEngineOption(_highlightedEngineIdx);
+  }
+}
+
+function highlightEngineOption(idx) {
+  document.querySelectorAll('.websearch-engine-option').forEach((el, i) => {
+    el.classList.toggle('highlighted', i === idx);
+  });
+}
+
+function handleEngineBtnKeydown(e) {
+  const dd = document.getElementById('websearch-engine-dropdown');
+  const isOpen = dd.classList.contains('open');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (!isOpen) { toggleEngineDropdown(); _highlightedEngineIdx = 0; }
+    else _highlightedEngineIdx = Math.min(_highlightedEngineIdx + 1, SEARCH_ENGINES.length - 1);
+    highlightEngineOption(_highlightedEngineIdx);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (!isOpen) { toggleEngineDropdown(); _highlightedEngineIdx = SEARCH_ENGINES.length - 1; }
+    else _highlightedEngineIdx = Math.max(_highlightedEngineIdx - 1, 0);
+    highlightEngineOption(_highlightedEngineIdx);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (isOpen && _highlightedEngineIdx >= 0) {
+      selectEngine(SEARCH_ENGINES[_highlightedEngineIdx].id);
+    } else {
+      toggleEngineDropdown();
+    }
+  } else if (e.key === 'Escape') {
+    dd.classList.remove('open');
+    document.getElementById('websearch-input').focus();
+  }
 }
 
 function selectEngine(id) {
   _activeEngineId = id;
   updateEngineBtnLabel(id);
   document.getElementById('websearch-engine-dropdown').classList.remove('open');
-  document.getElementById('websearch-input').focus();
+  // 검색어가 있으면 즉시 검색 (시나리오 2), 없으면 입력창으로 포커스 (시나리오 3)
+  const q = document.getElementById('websearch-input').value.trim();
+  if (q) { doWebSearch(); } else { document.getElementById('websearch-input').focus(); }
 }
 
 function openSearchEngineModal() {
