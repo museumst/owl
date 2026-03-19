@@ -2610,10 +2610,10 @@ document.addEventListener('click', (e) => {
     dropdown.classList.remove('open');
     btn.classList.remove('active');
   }
-  const engineWrap = document.getElementById('websearch-engine-btn')?.closest('.websearch-engine-wrap');
+  const engineBtn = document.getElementById('websearch-engine-btn');
   const engineDd = document.getElementById('websearch-engine-dropdown');
-  if (engineDd && engineWrap && !engineWrap.contains(e.target)) {
-    engineDd.classList.remove('open');
+  if (engineDd && engineBtn && !engineBtn.contains(e.target) && !engineDd.contains(e.target)) {
+    closeEngineDropdown();
   }
   const cal = document.getElementById('cal-popup');
   const dateDisplay = document.getElementById('date-nav-display');
@@ -2840,16 +2840,22 @@ function updateEngineBtnLabel(id) {
 function toggleEngineDropdown() {
   const dd = document.getElementById('websearch-engine-dropdown');
   if (dd.classList.contains('open')) {
-    dd.classList.remove('open');
+    closeEngineDropdown();
   } else {
     const btn = document.getElementById('websearch-engine-btn');
     const rect = btn.getBoundingClientRect();
-    dd.style.top  = (rect.bottom + 4) + 'px';
+    // transform 부모 영향 없이 뷰포트 기준으로 동작하도록 body로 이동
+    if (dd.parentElement !== document.body) document.body.appendChild(dd);
+    dd.style.top   = (rect.bottom + window.scrollY + 4) + 'px';
     dd.style.right = (window.innerWidth - rect.right) + 'px';
     dd.classList.add('open');
     _highlightedEngineIdx = SEARCH_ENGINES.findIndex(e => e.id === (_activeEngineId || getDefaultEngineId()));
     highlightEngineOption(_highlightedEngineIdx);
   }
+}
+
+function closeEngineDropdown() {
+  document.getElementById('websearch-engine-dropdown').classList.remove('open');
 }
 
 function highlightEngineOption(idx) {
@@ -2879,7 +2885,7 @@ function handleEngineBtnKeydown(e) {
       toggleEngineDropdown();
     }
   } else if (e.key === 'Escape') {
-    dd.classList.remove('open');
+    closeEngineDropdown();
     document.getElementById('websearch-input').focus();
   }
 }
@@ -2887,7 +2893,7 @@ function handleEngineBtnKeydown(e) {
 function selectEngine(id) {
   _activeEngineId = id;
   updateEngineBtnLabel(id);
-  document.getElementById('websearch-engine-dropdown').classList.remove('open');
+  closeEngineDropdown();
   // 검색어가 있으면 즉시 검색 (시나리오 2), 없으면 입력창으로 포커스 (시나리오 3)
   const q = document.getElementById('websearch-input').value.trim();
   if (q) { doWebSearch(); } else { document.getElementById('websearch-input').focus(); }
