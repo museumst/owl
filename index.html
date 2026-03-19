@@ -3116,7 +3116,14 @@ async function renderReport() {
   ]);
 
   const monthStart = _rDateKey(y, m, 1);
+  const monthEnd   = _rDateKey(y, m, lastDay);
   const habitsList = (habitsListRaw || []).filter(h => {
+    // 생성일이 이번 달 이후면 제외
+    if (h.createdAt) {
+      const d = new Date(h.createdAt);
+      const createdKey = _rDateKey(d.getFullYear(), d.getMonth() + 1, d.getDate());
+      if (createdKey > monthEnd) return false;
+    }
     if (!h.archived) return true;       // 현재 활성 습관은 항상 포함
     if (!h.archivedAt) return false;    // 삭제일 불명 → 제외
     return h.archivedAt >= monthStart;  // 이번 달 이후 삭제된 것만 포함
