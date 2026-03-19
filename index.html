@@ -487,6 +487,66 @@
       outline: none; padding: 0; cursor: pointer; width: 120px;
     }
 
+    /* 웹 검색 엔진 드롭다운 */
+    .websearch-engine-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 0 10px;
+      font-size: 13px; color: var(--text-primary); font-family: var(--font-body);
+      cursor: pointer; white-space: nowrap; height: 38px;
+      transition: border-color 0.15s;
+    }
+    .websearch-engine-btn:hover { border-color: var(--accent-light); }
+    .websearch-engine-btn .arrow { font-size: 9px; color: var(--text-muted); }
+    .websearch-engine-dropdown {
+      position: absolute; top: calc(100% + 4px); right: 0;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); box-shadow: var(--shadow);
+      z-index: 500; min-width: 120px; overflow: hidden;
+      display: none;
+    }
+    .websearch-engine-dropdown.open { display: block; animation: dropDown 0.15s ease; }
+    .websearch-engine-option {
+      padding: 9px 14px; font-size: 13px; color: var(--text-primary);
+      cursor: pointer; transition: background 0.12s;
+    }
+    .websearch-engine-option:hover { background: var(--bg-input); }
+    .websearch-engine-option.active { color: var(--accent); font-weight: 500; }
+    .websearch-engine-wrap { position: relative; }
+
+    /* 기본 검색엔진 설정 모달 */
+    #search-engine-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(44,40,36,0.35); z-index: 2000;
+      align-items: center; justify-content: center;
+    }
+    #search-engine-modal-overlay.open { display: flex; }
+    #search-engine-modal {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: 0 8px 40px rgba(44,40,36,0.18);
+      padding: 24px; width: 300px; max-width: 92vw;
+      animation: fadeInUp 0.2s ease;
+    }
+    #search-engine-modal h3 {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-muted); margin: 0 0 16px;
+    }
+    .search-engine-radio-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: background 0.12s;
+    }
+    .search-engine-radio-item:hover { background: var(--bg-input); }
+    .search-engine-radio-item input[type="radio"] { accent-color: var(--accent); cursor: pointer; }
+    .search-engine-radio-item label { font-size: 14px; color: var(--text-primary); cursor: pointer; flex: 1; }
+    #search-engine-modal-close {
+      width: 100%; margin-top: 16px; padding: 10px;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: var(--radius-sm); font-size: 13px; font-family: var(--font-body);
+      font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+    }
+    #search-engine-modal-close:hover { opacity: 0.85; }
+
     /* Affirmation Panel */
     .affirm-section { padding-bottom: 16px; }
     .affirm-section:last-child { padding-bottom: 0; }
@@ -1000,6 +1060,15 @@
 </div>
 
 <!-- 위젯 설정 모달 -->
+<!-- 기본 검색엔진 설정 모달 -->
+<div id="search-engine-modal-overlay" onclick="closeSearchEngineModal()">
+  <div id="search-engine-modal" onclick="event.stopPropagation()">
+    <h3>기본 검색엔진 설정</h3>
+    <div id="search-engine-radio-list"></div>
+    <button id="search-engine-modal-close" onclick="closeSearchEngineModal()">확인</button>
+  </div>
+</div>
+
 <div id="widget-modal-overlay" onclick="closeWidgetModal()">
   <div id="widget-modal" onclick="event.stopPropagation()">
     <div id="widget-modal-header">
@@ -1149,12 +1218,21 @@
     <!-- Col 3: Books + YouTube -->
     <div id="col-right">
       <div class="panel" id="panel-websearch">
-        <div class="panel-title">웹 검색</div>
-        <div class="input-row">
+        <div class="panel-title-row">
+          <div class="panel-title" style="margin-bottom:0">웹 검색</div>
+          <button class="books-hide-label" onclick="openSearchEngineModal()">기본 검색엔진 설정</button>
+        </div>
+        <div class="input-row" style="margin-top:14px">
           <input type="text" id="websearch-input" class="text-input"
                  placeholder="검색어를 입력하세요"
                  onkeydown="if(event.key==='Enter' && !event.isComposing) doWebSearch()">
-          <button class="add-btn" onclick="doWebSearch()">검색</button>
+          <div class="websearch-engine-wrap">
+            <button class="websearch-engine-btn" id="websearch-engine-btn" onclick="toggleEngineDropdown()">
+              <span id="websearch-engine-label">구글</span>
+              <span class="arrow">▼</span>
+            </button>
+            <div class="websearch-engine-dropdown" id="websearch-engine-dropdown"></div>
+          </div>
         </div>
       </div>
 
@@ -2517,7 +2595,7 @@ function toggleSettingsDropdown() {
 // ESC 키로 모달 닫기
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    closeSearch(); closeCalendar(); closeTimer(); closeWidgetModal();
+    closeSearch(); closeCalendar(); closeTimer(); closeWidgetModal(); closeSearchEngineModal();
     const lb = document.getElementById('vision-lightbox');
     if (lb) lb.remove();
   }
@@ -2530,6 +2608,11 @@ document.addEventListener('click', (e) => {
   if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
     dropdown.classList.remove('open');
     btn.classList.remove('active');
+  }
+  const engineWrap = document.getElementById('websearch-engine-btn')?.closest('.websearch-engine-wrap');
+  const engineDd = document.getElementById('websearch-engine-dropdown');
+  if (engineDd && engineWrap && !engineWrap.contains(e.target)) {
+    engineDd.classList.remove('open');
   }
   const cal = document.getElementById('cal-popup');
   const dateDisplay = document.getElementById('date-nav-display');
@@ -2719,11 +2802,84 @@ function updatePomoDots() {
 }
 
 // ── 웹 검색 ──────────────────────────────────────────
+const SEARCH_ENGINES = [
+  { id: 'google',    name: '구글',      url: q => `https://www.google.com/search?q=${q}` },
+  { id: 'naver',     name: '네이버',    url: q => `https://search.naver.com/search.naver?query=${q}` },
+  { id: 'youtube',   name: '유튜브',    url: q => `https://www.youtube.com/results?search_query=${q}` },
+  { id: 'navermap',  name: '네이버지도', url: q => `https://map.naver.com/v5/search/${q}` },
+  { id: 'namuwiki',  name: '나무위키',  url: q => `https://namu.wiki/w/${q}` },
+];
+const SEARCH_ENGINE_KEY = 'default_search_engine';
+let _activeEngineId = null; // 이번 검색에만 쓸 엔진 (null이면 기본값 사용)
+
+function getDefaultEngineId() {
+  return localStorage.getItem(SEARCH_ENGINE_KEY) || 'google';
+}
+
+function initSearchEngine() {
+  renderEngineDropdown();
+  updateEngineBtnLabel(getDefaultEngineId());
+}
+
+function renderEngineDropdown() {
+  const dd = document.getElementById('websearch-engine-dropdown');
+  const defaultId = getDefaultEngineId();
+  dd.innerHTML = SEARCH_ENGINES.map(e =>
+    `<div class="websearch-engine-option${e.id === defaultId ? ' active' : ''}"
+      onclick="selectEngine('${e.id}')">${e.name}</div>`
+  ).join('');
+}
+
+function updateEngineBtnLabel(id) {
+  const engine = SEARCH_ENGINES.find(e => e.id === id) || SEARCH_ENGINES[0];
+  document.getElementById('websearch-engine-label').textContent = engine.name;
+}
+
+function toggleEngineDropdown() {
+  const dd = document.getElementById('websearch-engine-dropdown');
+  dd.classList.toggle('open');
+}
+
+function selectEngine(id) {
+  _activeEngineId = id;
+  updateEngineBtnLabel(id);
+  document.getElementById('websearch-engine-dropdown').classList.remove('open');
+  document.getElementById('websearch-input').focus();
+}
+
+function openSearchEngineModal() {
+  const defaultId = getDefaultEngineId();
+  document.getElementById('search-engine-radio-list').innerHTML = SEARCH_ENGINES.map(e => `
+    <div class="search-engine-radio-item" onclick="document.getElementById('radio-${e.id}').click()">
+      <input type="radio" id="radio-${e.id}" name="search-engine" value="${e.id}"${e.id === defaultId ? ' checked' : ''}
+        onchange="saveDefaultEngine('${e.id}')">
+      <label for="radio-${e.id}">${e.name}</label>
+    </div>`).join('');
+  document.getElementById('search-engine-modal-overlay').classList.add('open');
+}
+
+function closeSearchEngineModal() {
+  document.getElementById('search-engine-modal-overlay').classList.remove('open');
+}
+
+function saveDefaultEngine(id) {
+  localStorage.setItem(SEARCH_ENGINE_KEY, id);
+  renderEngineDropdown();
+  // 현재 임시 선택이 없으면 버튼 레이블도 업데이트
+  if (!_activeEngineId) updateEngineBtnLabel(id);
+}
+
 function doWebSearch() {
   const q = document.getElementById('websearch-input').value.trim();
   if (!q) return;
-  window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank');
+  const engineId = _activeEngineId || getDefaultEngineId();
+  const engine = SEARCH_ENGINES.find(e => e.id === engineId) || SEARCH_ENGINES[0];
+  window.open(engine.url(encodeURIComponent(q)), '_blank');
   document.getElementById('websearch-input').value = '';
+  // 임시 선택 초기화 → 기본값으로 복귀
+  _activeEngineId = null;
+  updateEngineBtnLabel(getDefaultEngineId());
+  renderEngineDropdown();
 }
 
 function playAlarm() {
@@ -2943,6 +3099,7 @@ async function init() {
   await Promise.all([loadAffirmations(), loadVision(), loadTodos(), loadMonthlyTodos(), loadDone(), loadBooks(), loadExpenses(), loadYoutube(), loadGratitude(), loadHabits(), loadMemo()]);
   await loadWidgetOrder();
   initWidgetDrag();
+  initSearchEngine();
   initDarkMode();
 }
 
