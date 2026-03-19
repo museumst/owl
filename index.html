@@ -1893,7 +1893,6 @@ function formatTodoTime(mins) {
 
 async function loadTodos() {
   renderTodos(await getData(`todos_${viewDate}`) || []);
-  updateTodoPhaseHint();
 }
 function renderTodos(todos) {
   const list=document.getElementById('todo-list'); const empty=document.getElementById('todo-empty');
