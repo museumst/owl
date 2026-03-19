@@ -3311,8 +3311,9 @@ function _renderReportBooks(books, y, m) {
     sec.innerHTML = html; return sec;
   }
   for (const b of activeBooks) {
+    const today = todayKey();
     const start = b.startDate && b.startDate >= monthStart ? b.startDate : monthStart;
-    const rawEnd = (b.done && b.doneDate) ? b.doneDate : monthEnd;
+    const rawEnd = (b.done && b.doneDate) ? b.doneDate : (today < monthEnd ? today : monthEnd);
     const end = rawEnd <= monthEnd ? rawEnd : monthEnd;
     const [,,sd] = start.split('-').map(Number);
     const [,,ed] = end.split('-').map(Number);
