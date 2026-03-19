@@ -262,7 +262,6 @@
     .list-item:hover .del-btn { opacity:1; }
     .del-btn:hover { color:var(--danger); }
     .empty-state { text-align:center; padding:18px 0; color:var(--text-muted); font-size:12px; }
-    #todo-phase-hint { font-size:11px; color:var(--text-muted); text-align:center; padding:8px 0 2px; line-height:1.6; }
 
     /* Date Nav */
     #date-nav {
@@ -551,41 +550,6 @@
       pointer-events: none;
     }
     #top-nav > * { pointer-events: auto; }
-
-    /* 해금 힌트 버튼 */
-    #unlock-hint-btn {
-      display: none;
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: var(--bg-panel);
-      color: var(--text-secondary);
-      font-size: 15px; font-weight: 700;
-      cursor: default;
-      align-items: center; justify-content: center;
-      box-shadow: var(--shadow);
-      position: relative;
-    }
-    body[data-phase="0"] #unlock-hint-btn { display: flex; }
-    #unlock-hint-btn::after {
-      content: "감사일기를 두 번 쓰면 '오늘 할 일'이 활성화됩니다.";
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-      background: var(--text-primary);
-      color: var(--bg);
-      font-size: 12px; font-weight: 400;
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
-      white-space: normal;
-      width: max-content;
-      max-width: 220px;
-      text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-    #unlock-hint-btn:hover::after { opacity: 1; }
 
     /* 로그인 버튼 */
     #auth-btn {
@@ -878,15 +842,6 @@
   #app.report-mode #main-grid { display:none; }
   #app.report-mode #report-view { display:block; }
 
-  /* ── 마켓 브리핑 iframe 뷰 ── */
-  #market-view { display:none; width:100%; }
-  #app.market-mode #header-panel,
-  #app.market-mode #main-grid { display:none; }
-  #app.market-mode #market-view { display:block; }
-  #market-iframe {
-    display:block; width:100%; height:calc(100vh - 56px);
-    border:none; border-radius:var(--radius-lg); box-shadow:var(--shadow);
-  }
   .report-header {
     display:flex; align-items:center; justify-content:space-between;
     padding:24px 0 20px; border-bottom:2px solid var(--border); margin-bottom:24px;
@@ -971,81 +926,6 @@
   .memo-textarea::placeholder { color: var(--text-muted); opacity: 0.7; }
 
   /* ── 온보딩 오버레이 ─────────────────────────────── */
-  #onboarding-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: var(--bg);
-    z-index: 9999;
-    overflow-y: auto;
-  }
-  #onboarding-box {
-    max-width: 800px; width: 100%;
-    min-height: 100vh;
-    margin: 0 auto;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: flex-start;
-    padding: max(40px, calc((100vh - 520px) / 3)) 24px 60px;
-    box-sizing: border-box;
-    animation: fadeInUp 0.7s ease;
-    text-align: center;
-  }
-  #onboarding-tag {
-    display: inline-block;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
-    padding: 5px 14px; border-radius: 20px;
-    margin-bottom: 28px;
-  }
-  #onboarding-headline {
-    font-size: 54px; font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -0.035em; line-height: 1.08;
-    margin-bottom: 22px;
-  }
-  #onboarding-sub {
-    font-size: 17px; font-weight: 400;
-    color: var(--text-secondary); line-height: 1.8;
-    margin: 0 auto 36px; max-width: 520px;
-  }
-  #onboarding-sub p { margin: 0; }
-  #onboarding-sub p + p { margin-top: 1.5em; }
-  #onboarding-sub strong { color: var(--text-primary); font-weight: 600; }
-  .onboarding-examples {
-    display: flex; gap: 10px; margin-bottom: 40px;
-  }
-  .onboarding-example-card {
-    flex: 1;
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 14px 16px;
-    font-size: 13px; color: var(--text-muted);
-    line-height: 1.65; font-style: italic; white-space: nowrap;
-    text-align: left;
-  }
-  #onboarding-unlock-hint {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.7;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  #onboarding-start-btn {
-    background: var(--accent); color: #fff; border: none;
-    border-radius: var(--radius-md); padding: 15px 0;
-    font-size: 16px; font-family: var(--font-body); font-weight: 600;
-    cursor: pointer; transition: all 0.2s; letter-spacing: 0.02em;
-    width: 100%; max-width: 320px;
-  }
-  #onboarding-start-btn:hover { background: var(--text-primary); transform: translateY(-1px); }
-  @media (max-width: 480px) {
-    #onboarding-headline { font-size: 38px; }
-    #onboarding-sub { font-size: 15px; }
-    .onboarding-examples { flex-direction: column; }
-  }
-
   /* ── 위젯 해금 배너 ──────────────────────────────── */
   #unlock-banner {
     overflow: hidden; max-height: 0; opacity: 0;
@@ -1059,22 +939,6 @@
   #unlock-banner.visible {
     max-height: 60px; padding: 14px 20px;
     margin-bottom: 20px; opacity: 1;
-  }
-
-  /* ── 페이즈 0: 레이아웃 + 설정 숨김 ────────────────── */
-  body[data-phase="0"] #main-grid {
-    grid-template-columns: 1fr;
-    max-width: 520px; margin-left: auto; margin-right: auto;
-  }
-  body[data-phase="0"] .phase-hide {
-    opacity: 0.38;
-    cursor: default;
-    pointer-events: none;
-  }
-  body[data-phase="0"] .phase-hide::after {
-    content: '🔒';
-    margin-left: auto;
-    font-size: 11px;
   }
 
   /* 위젯 설정 모달 */
@@ -1109,8 +973,6 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
   }
   #widget-modal-grid .settings-item { border-radius: var(--radius-sm); border-bottom: none; }
-  #widget-modal-grid .settings-item.phase-locked { cursor: default; }
-  .widget-lock-icon { font-size: 12px; margin-left: auto; }
 
   </style>
 </head>
@@ -1118,7 +980,6 @@
 
 <!-- 상단 네비게이션 (로그인 + 설정 버튼) -->
 <div id="top-nav">
-  <button id="unlock-hint-btn">!</button>
   <button id="auth-btn" onclick="handleAuthClick()">
     <img id="auth-avatar" style="display:none" alt="">
     <span id="auth-label">로그인</span>
@@ -1129,31 +990,12 @@
 <!-- 드롭다운 -->
 <div id="settings-dropdown">
   <div class="settings-search-row" onclick="openSearch(); toggleSettingsDropdown()">검색</div>
-  <div class="settings-search-row phase-hide" id="report-menu-item" onclick="handleReportMenuClick()">월간 보고서</div>
-  <div class="settings-search-row phase-hide" id="market-menu-item" onclick="handleMarketMenuClick()">마켓 브리핑</div>
+  <div class="settings-search-row" id="report-menu-item" onclick="handleReportMenuClick()">월간 보고서</div>
   <div class="settings-search-row" onclick="toggleDarkMode()" style="justify-content:space-between">
     <span>다크 모드</span>
     <div class="toggle-switch" id="darkmode-toggle"></div>
   </div>
   <div class="settings-search-row" onclick="openWidgetModal(); toggleSettingsDropdown()">위젯 설정</div>
-</div>
-
-<!-- 온보딩 오버레이 (첫 방문 시) -->
-<div id="onboarding-overlay">
-  <div id="onboarding-box">
-    <div id="onboarding-tag">감사일기</div>
-    <div id="onboarding-headline">좋은 일이<br>없어도 됩니다.</div>
-    <div id="onboarding-sub">
-      <p>뇌는 원래 나쁜 것에 집중하도록 설계되어 있습니다.<br>감사 일기를 적는 이 작은 습관이 그 방향을 조금씩 바꿉니다.</p>
-      <p>감사일기는 <strong>'좋은 일 찾기'</strong>가 아닙니다.<br>오늘 하루 중 단 하나, <strong>나쁘지 않았던 순간</strong>을 기록하는 것입니다.<br>하루 한 줄, 60초면 충분합니다.</p>
-    </div>
-    <div class="onboarding-examples">
-      <div class="onboarding-example-card">"오늘 날씨가 나쁘지 않았다."</div>
-      <div class="onboarding-example-card">"잠에서 깼을 때 몸이 가벼웠다."</div>
-    </div>
-    <p id="onboarding-unlock-hint">꾸준히 기록하면 할 일 관리, 지출 내역 등<br>더 많은 기능이 순서대로 열립니다.</p>
-    <button id="onboarding-start-btn" onclick="startOnboarding()">지금 시작하기 →</button>
-  </div>
 </div>
 
 <!-- 위젯 설정 모달 -->
@@ -1179,9 +1021,6 @@
       <button id="today-btn" onclick="goToToday()">오늘로</button>
     </div>
   </div>
-
-  <!-- 위젯 해금 배너 -->
-  <div id="unlock-banner">🔓 <span id="unlock-banner-text"></span></div>
 
   <div id="main-grid">
 
@@ -1247,7 +1086,6 @@
         </div>
         <ul class="list-items" id="todo-list"></ul>
         <div class="empty-state" id="todo-empty">오늘의 할 일을 추가해보세요</div>
-        <div id="todo-phase-hint"></div>
       </div>
 
       <div class="panel" id="panel-monthly-todo">
@@ -1374,11 +1212,6 @@
       </div>
     </div>
 
-  </div>
-
-  <!-- Market Briefing View -->
-  <div id="market-view">
-    <iframe id="market-iframe" src="macro-dashboard.html" title="마켓 브리핑"></iframe>
   </div>
 
   <!-- Monthly Report View -->
@@ -2105,26 +1938,10 @@ function renderTodos(todos) {
     list.appendChild(li);
   });
 }
-function updateTodoPhaseHint() {
-  const hint = document.getElementById('todo-phase-hint');
-  if (!hint) return;
-  const phase = parseInt(localStorage.getItem(PHASE_KEY) || '0');
-  if (phase !== 1) { hint.textContent = ''; return; }
-  const days = JSON.parse(localStorage.getItem(TODO_COMPLETE_DAYS_KEY) || '[]');
-  const count = new Set(days).size;
-  hint.textContent = `오늘 가장 중요한 일 1개에 집중해보세요 · ${count}/3일 완료`;
-}
-
 async function addTodo() {
   const input=document.getElementById('todo-input'); const text=input.value.trim(); if(!text) return;
   const minsInput=document.getElementById('todo-mins-input');
   const mins=parseInt(minsInput.value)||0;
-  // phase 1 제한: 하루 1개
-  const phase = parseInt(localStorage.getItem(PHASE_KEY) || '0');
-  if (phase === 1) {
-    const existing = await getData(`todos_${viewDate}`) || [];
-    if (existing.length >= 1) { input.focus(); return; }
-  }
   const key=`todos_${viewDate}`; const todos=await getData(key)||[];
   todos.push({text, mins: mins||null, done:false, createdAt:Date.now()});
   await setData(key,todos); input.value=''; minsInput.value=''; renderTodos(todos);
@@ -2132,40 +1949,10 @@ async function addTodo() {
 async function toggleTodo(idx) {
   const key=`todos_${viewDate}`; const todos=await getData(key)||[];
   todos[idx].done=!todos[idx].done; await setData(key,todos); renderTodos(todos);
-  const days = await getData(TODO_COMPLETE_DAYS_KEY) || [];
-  if (todos[idx].done) {
-    // 완료 처리 시 날짜 기록 → 페이즈 업그레이드 체크
-    if (!days.includes(viewDate)) {
-      days.push(viewDate);
-      await setData(TODO_COMPLETE_DAYS_KEY, days);
-    }
-    await checkPhaseUpgrade();
-    applyPhase();
-  } else {
-    // 체크 해제 시 해당 날짜에 완료된 항목이 없으면 날짜 기록 제거
-    const hasCompleted = todos.some(t => t.done);
-    if (!hasCompleted) {
-      const filtered = days.filter(d => d !== viewDate);
-      if (filtered.length !== days.length) {
-        await setData(TODO_COMPLETE_DAYS_KEY, filtered);
-      }
-    }
-  }
-  updateTodoPhaseHint();
 }
 async function deleteTodo(idx) {
   const key=`todos_${viewDate}`; const todos=await getData(key)||[];
   todos.splice(idx,1); await setData(key,todos); renderTodos(todos);
-  // 삭제 후 해당 날짜에 완료된 항목이 없으면 완료 날짜 기록에서 제거
-  const hasCompleted = todos.some(t => t.done);
-  if (!hasCompleted) {
-    const days = await getData(TODO_COMPLETE_DAYS_KEY) || [];
-    const filtered = days.filter(d => d !== viewDate);
-    if (filtered.length !== days.length) {
-      await setData(TODO_COMPLETE_DAYS_KEY, filtered);
-    }
-  }
-  updateTodoPhaseHint();
 }
 
 /* ================================================================
@@ -2531,11 +2318,6 @@ async function addGratitude() {
   const items = await getData(key) || [];
   items.push({ text, createdAt: Date.now() });
   await setData(key, items); input.value = ''; renderGratitude(items);
-  // 해금 시스템: 총 작성 횟수 누적 후 즉시 페이즈 체크
-  const count = (await getData(GRATITUDE_COUNT_KEY) || 0) + 1;
-  await setData(GRATITUDE_COUNT_KEY, count);
-  await checkPhaseUpgrade();
-  applyPhase();
 }
 
 async function deleteGratitude(idx) {
@@ -2690,17 +2472,12 @@ function updateColumnVisibility() {
 function renderWidgetModal() {
   const grid = document.getElementById('widget-modal-grid');
   grid.innerHTML = '';
-  const phase = parseInt(localStorage.getItem(PHASE_KEY) || '0');
-  const allowed = PHASE_WIDGETS[Math.min(phase, PHASE_WIDGETS.length - 1)];
   WIDGET_META.forEach(({ id, name }) => {
-    const isPhaseLocked = !allowed.includes(id);
     const isVisible = !document.getElementById(id)?.classList.contains('widget-hidden');
     const item = document.createElement('div');
-    item.className = 'settings-item' + (isPhaseLocked ? ' phase-locked' : '');
-    item.innerHTML = isPhaseLocked
-      ? `<span class="settings-item-name">${name}</span><span class="widget-lock-icon">🔒</span>`
-      : `<span class="settings-item-name">${name}</span><div class="toggle-switch${isVisible ? ' on' : ''}"></div>`;
-    if (!isPhaseLocked) item.onclick = () => toggleWidget(id);
+    item.className = 'settings-item';
+    item.innerHTML = `<span class="settings-item-name">${name}</span><div class="toggle-switch${isVisible ? ' on' : ''}"></div>`;
+    item.onclick = () => toggleWidget(id);
     grid.appendChild(item);
   });
 }
@@ -2741,7 +2518,6 @@ function toggleSettingsDropdown() {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeSearch(); closeCalendar(); closeTimer(); closeWidgetModal();
-    if (document.getElementById('app').classList.contains('market-mode')) closeMarketBriefing();
     const lb = document.getElementById('vision-lightbox');
     if (lb) lb.remove();
   }
@@ -3138,96 +2914,6 @@ async function clearMemo() {
   await setData(MEMO_KEY, '');
 }
 
-// ── 위젯 해금 페이즈 시스템 ───────────────────────────
-const ONBOARDING_KEY         = 'onboarding_done';
-const PHASE_KEY              = 'app_phase';
-const GRATITUDE_COUNT_KEY    = 'gratitude_entry_count';
-const TODO_COMPLETE_DAYS_KEY = 'todo_complete_days';
-
-// 단계별 허용 위젯 목록 (누적)
-const PHASE_WIDGETS = [
-  ['panel-gratitude'],                                                          // 0단계: 감사일기만
-  ['panel-gratitude', 'panel-todo'],                                            // 1단계: + 오늘 할 일 (1개 제한)
-  ['panel-gratitude', 'panel-todo', 'panel-done', 'panel-vision'],              // 2단계: + 오늘 한 일, 비전보드 (제한 해제)
-];
-
-const PHASE_UNLOCK_MESSAGES = [
-  null,
-  "'오늘 할 일' 위젯을 사용할 수 있습니다.",
-  "'오늘 한 일'과 '비전보드' 위젯이 열렸습니다. 할 일 제한도 해제됩니다!",
-];
-
-async function initPhase() {
-  const done = localStorage.getItem(ONBOARDING_KEY);
-  if (!done) {
-    // 첫 방문: 모든 위젯 숨기고 온보딩 모달 표시
-    WIDGET_META.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) { el.style.animation = 'none'; el.classList.add('widget-hidden'); }
-    });
-    updateColumnVisibility();
-    const ov = document.getElementById('onboarding-overlay');
-    ov.style.display = 'block';
-    ov.scrollTop = 0;
-    return;
-  }
-  await checkPhaseUpgrade();
-  applyPhase();
-}
-
-function applyPhase() {
-  const phase = parseInt(localStorage.getItem(PHASE_KEY) || '0');
-  const allowed = PHASE_WIDGETS[Math.min(phase, PHASE_WIDGETS.length - 1)];
-  document.body.setAttribute('data-phase', String(phase));
-  WIDGET_META.forEach(({ id }) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.style.animation = 'none';
-    el.style.opacity = '1';
-    el.classList.toggle('widget-hidden', !allowed.includes(id));
-  });
-  updateColumnVisibility();
-}
-
-async function checkPhaseUpgrade() {
-  const phase = parseInt(localStorage.getItem(PHASE_KEY) || '0');
-  if (phase >= PHASE_WIDGETS.length - 1) return; // 이미 최고 단계
-
-  if (phase === 0) {
-    // 조건: 감사일기 총 2회 작성 시 즉시 해금
-    const count = await getData(GRATITUDE_COUNT_KEY) || 0;
-    if (count >= 2) {
-      localStorage.setItem(PHASE_KEY, '1');
-      showUnlockBanner(1);
-    }
-  }
-
-  if (phase === 1) {
-    // 조건: 서로 다른 3일에 할 일 1개 이상 완료
-    const days = await getData(TODO_COMPLETE_DAYS_KEY) || [];
-    if (new Set(days).size >= 3) {
-      localStorage.setItem(PHASE_KEY, '2');
-      showUnlockBanner(2);
-    }
-  }
-}
-
-function showUnlockBanner(phase) {
-  const banner = document.getElementById('unlock-banner');
-  const text   = document.getElementById('unlock-banner-text');
-  if (!banner || !text) return;
-  text.textContent = PHASE_UNLOCK_MESSAGES[phase] || '';
-  banner.classList.add('visible');
-  setTimeout(() => banner.classList.remove('visible'), 6000);
-}
-
-function startOnboarding() {
-  localStorage.setItem(ONBOARDING_KEY, 'true');
-  localStorage.setItem(PHASE_KEY, '0');
-  // 페이지 리로드로 캐시 없이 깨끗하게 시작
-  location.reload();
-}
-
 // ── 다크 모드 ─────────────────────────────────────────
 function initDarkMode() {
   const enabled = localStorage.getItem('darkmode_enabled') === 'true';
@@ -3255,7 +2941,6 @@ async function init() {
   await Promise.all([loadAffirmations(), loadVision(), loadTodos(), loadMonthlyTodos(), loadDone(), loadBooks(), loadExpenses(), loadYoutube(), loadGratitude(), loadHabits(), loadMemo()]);
   await loadWidgetOrder();
   initWidgetDrag();
-  await initPhase();
   initDarkMode();
 }
 
@@ -3269,10 +2954,9 @@ async function loginWithGoogle() {
 }
 
 function clearLocalData() {
-  // 앱 상태(온보딩·페이즈·위젯설정)는 유지, 개인 데이터만 삭제
+  // 앱 상태(위젯설정·다크모드)는 유지, 개인 데이터만 삭제
   const preserve = new Set([
-    'darkmode_enabled', 'onboarding_done', 'app_phase',
-    'widget_visibility_b', 'widget_order_v1'
+    'darkmode_enabled', 'widget_visibility_b', 'widget_order_v1'
   ]);
   Object.keys(localStorage).filter(k => !preserve.has(k)).forEach(k => localStorage.removeItem(k));
 }
@@ -3294,7 +2978,6 @@ async function syncFromCloud() {
     // 클라우드 데이터로 모든 위젯 새로고침
     await Promise.all([loadAffirmations(), loadVision(), loadTodos(), loadMonthlyTodos(), loadDone(), loadBooks(), loadExpenses(), loadYoutube(), loadGratitude(), loadHabits(), loadMemo()]);
     await loadWidgetOrder();
-    await initPhase();
     initDarkMode();
   } catch(e) { console.error('syncFromCloud 오류:', e); }
 }
@@ -3335,36 +3018,10 @@ auth.onAuthStateChanged(async (user) => {
     // 페이지 로드 시에는 앱 상태(온보딩 등)를 유지한 채로 빈 상태 렌더링
     document.body.classList.add('logged-out');
     await Promise.all([loadAffirmations(), loadVision(), loadTodos(), loadMonthlyTodos(), loadDone(), loadBooks(), loadExpenses(), loadYoutube(), loadGratitude(), loadHabits(), loadMemo()]);
-    await initPhase();
   }
 });
 
 init();
-
-/* ================================================================
-   MARKET BRIEFING — 마켓 브리핑
-================================================================ */
-function openMarketBriefing() {
-  document.getElementById('app').classList.add('market-mode');
-  const item = document.getElementById('market-menu-item');
-  if (item) item.textContent = '← 되돌아가기';
-}
-
-function closeMarketBriefing() {
-  document.getElementById('app').classList.remove('market-mode');
-  const item = document.getElementById('market-menu-item');
-  if (item) item.textContent = '마켓 브리핑';
-}
-
-function handleMarketMenuClick() {
-  const app = document.getElementById('app');
-  if (app.classList.contains('market-mode')) {
-    closeMarketBriefing();
-  } else {
-    toggleSettingsDropdown();
-    openMarketBriefing();
-  }
-}
 
 /* ================================================================
    MONTHLY REPORT — 월간 보고서
