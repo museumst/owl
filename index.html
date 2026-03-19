@@ -731,8 +731,8 @@
     /* ---- 위젯 드래그 순서 변경 ---- */
     .widget-drag-handle {
       cursor: grab; color: var(--text-muted); flex-shrink: 0;
-      opacity: 0.6; transition: opacity 0.15s, color 0.15s; user-select: none;
-      padding: 0 5px 0 0; line-height: 0; display: inline-flex; align-items: center;
+      opacity: 0.7; transition: opacity 0.15s, color 0.15s; user-select: none;
+      padding: 0 6px 0 0; display: inline-flex; align-items: center; vertical-align: middle;
     }
     .widget-drag-handle:hover { opacity: 1; color: var(--accent); }
     .widget-drag-handle:active { cursor: grabbing; }
@@ -2771,7 +2771,9 @@ const WIDGET_ORDER_KEY = 'widget_order_v1';
 let _wDragEl = null;
 
 function initWidgetDrag() {
-  document.querySelectorAll('#main-grid .panel').forEach(panel => {
+  const panels = document.querySelectorAll('#main-grid .panel');
+  console.log('[initWidgetDrag] 패널 수:', panels.length);
+  panels.forEach(panel => {
     // 패널 타이틀 영역에 드래그 핸들 삽입
     const handle = document.createElement('span');
     handle.className = 'widget-drag-handle';
