@@ -1079,10 +1079,10 @@
         <div class="input-row">
           <input type="text" id="todo-input" class="text-input"
                  placeholder="할 일을 입력하세요"
-                 onkeydown="if(event.key==='Enter') addTodo()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addTodo()">
           <input type="number" id="todo-mins-input" class="text-input todo-mins-input"
                  placeholder="분" min="1" inputmode="numeric"
-                 onkeydown="if(event.key==='Enter') addTodo()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addTodo()">
           <button class="add-btn" onclick="addTodo()">추가</button>
         </div>
         <ul class="list-items" id="todo-list"></ul>
@@ -1094,7 +1094,7 @@
         <div class="input-row">
           <input type="text" id="monthly-todo-input" class="text-input"
                  placeholder="할 일을 입력하세요"
-                 onkeydown="if(event.key==='Enter') addMonthlyTodo()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addMonthlyTodo()">
           <button class="add-btn" onclick="addMonthlyTodo()">추가</button>
         </div>
         <ul class="list-items" id="monthly-todo-list"></ul>
@@ -1106,7 +1106,7 @@
         <div class="input-row">
           <input type="text" id="done-input" class="text-input"
                  placeholder="한 일을 입력하세요"
-                 onkeydown="if(event.key==='Enter') addDone()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addDone()">
           <button class="add-btn" onclick="addDone()">추가</button>
         </div>
         <ul class="list-items" id="done-list"></ul>
@@ -1118,11 +1118,11 @@
         <div class="input-row">
           <input type="text" id="expense-desc" class="text-input"
                  placeholder="내역" style="flex:2"
-                 onkeydown="if(event.key==='Enter') addExpense()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addExpense()">
           <input type="text" id="expense-amount" class="text-input expense-amount-input"
                  placeholder="금액" inputmode="numeric"
                  oninput="formatAmountInput(this)"
-                 onkeydown="if(event.key==='Enter') addExpense()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addExpense()">
           <button class="add-btn" onclick="addExpense()">추가</button>
         </div>
         <div id="expense-list"></div>
@@ -1138,7 +1138,7 @@
         <div class="input-row">
           <input type="text" id="gratitude-input" class="text-input"
                  placeholder="오늘 감사한 것은..."
-                 onkeydown="if(event.key==='Enter') addGratitude()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addGratitude()">
           <button class="add-btn" onclick="addGratitude()">추가</button>
         </div>
         <ul class="list-items" id="gratitude-list"></ul>
@@ -1153,7 +1153,7 @@
         <div class="input-row">
           <input type="text" id="websearch-input" class="text-input"
                  placeholder="검색어를 입력하세요"
-                 onkeydown="if(event.key==='Enter') doWebSearch()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) doWebSearch()">
           <button class="add-btn" onclick="doWebSearch()">검색</button>
         </div>
       </div>
@@ -1168,9 +1168,9 @@
         </div>
         <div class="input-row">
           <input type="text" id="book-title-input" class="text-input" placeholder="제목" style="flex:2"
-                 onkeydown="if(event.key==='Enter') addBook()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addBook()">
           <input type="text" id="book-author-input" class="text-input" placeholder="저자"
-                 onkeydown="if(event.key==='Enter') addBook()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addBook()">
           <button class="add-btn" onclick="addBook()">추가</button>
         </div>
         <div id="book-list"></div>
@@ -1182,7 +1182,7 @@
         <div class="input-row">
           <input type="text" id="habit-input" class="text-input"
                  placeholder="새 습관 추가..."
-                 onkeydown="if(event.key==='Enter') addHabit()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addHabit()">
           <button class="add-btn" onclick="addHabit()">추가</button>
         </div>
         <div id="habit-list"></div>
@@ -1195,7 +1195,7 @@
         <div class="input-row">
           <input type="url" id="youtube-url-input" class="text-input"
                  placeholder="YouTube URL을 붙여넣으세요"
-                 onkeydown="if(event.key==='Enter') addYoutube()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing) addYoutube()">
           <button class="add-btn" onclick="addYoutube()">추가</button>
         </div>
         <div id="youtube-card-list"></div>
