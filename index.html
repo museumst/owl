@@ -730,11 +730,12 @@
 
     /* ---- 위젯 드래그 순서 변경 ---- */
     .widget-drag-handle {
-      cursor: grab; color: var(--text-muted); font-size: 15px; flex-shrink: 0;
-      opacity: 0.5; transition: opacity 0.15s; user-select: none;
-      padding: 0 3px; line-height: 1;
+      cursor: grab; color: var(--text-muted); flex-shrink: 0;
+      opacity: 0.6; transition: opacity 0.15s, color 0.15s; user-select: none;
+      padding: 0 5px 0 0; line-height: 0; display: inline-flex; align-items: center;
     }
-    .widget-drag-handle:hover { opacity: 1 !important; color: var(--accent); }
+    .widget-drag-handle:hover { opacity: 1; color: var(--accent); }
+    .widget-drag-handle:active { cursor: grabbing; }
     .panel.widget-dragging             { opacity: 0.35; }
     .panel.widget-drop-before {
       box-shadow: 0 -3px 0 0 var(--accent-light), var(--shadow);
@@ -2774,8 +2775,8 @@ function initWidgetDrag() {
     // 패널 타이틀 영역에 드래그 핸들 삽입
     const handle = document.createElement('span');
     handle.className = 'widget-drag-handle';
-    handle.textContent = '⠿';
     handle.title = '드래그하여 위치 변경';
+    handle.innerHTML = `<svg width="10" height="14" viewBox="0 0 10 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="2.5" cy="2.5" r="1.5"/><circle cx="7.5" cy="2.5" r="1.5"/><circle cx="2.5" cy="7" r="1.5"/><circle cx="7.5" cy="7" r="1.5"/><circle cx="2.5" cy="11.5" r="1.5"/><circle cx="7.5" cy="11.5" r="1.5"/></svg>`;
 
     const titleRow = panel.querySelector(':scope > .panel-title-row');
     const titleEl  = panel.querySelector(':scope > .panel-title');
