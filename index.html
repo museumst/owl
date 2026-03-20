@@ -411,7 +411,7 @@
 
     /* Expenses */
     .expense-amount-input { text-align:right; flex: 0 0 100px; }
-    .todo-mins-input      { text-align:right; flex: 0 0 72px; }
+    .todo-mins-input      { text-align:right; flex: 0 0 90px; }
     .todo-mins-badge {
       font-size: 11px; font-weight: 600; color: var(--text-muted);
       margin-left: 5px; flex-shrink: 0; opacity: 0.8;
@@ -810,7 +810,7 @@
     #clock-time:hover { opacity: 0.75; }
 
     #timer-popup {
-      position: fixed; left: calc(50% - 150px);
+      position: fixed; left: 50%; transform: translateX(-50%);
       z-index: 300; width: 300px;
       background: var(--bg-panel); border: 1px solid var(--border);
       border-radius: var(--radius-lg);
@@ -1230,7 +1230,7 @@
         <div class="input-row" style="margin-top:14px">
           <input type="text" id="websearch-input" class="text-input"
                  placeholder="검색어를 입력하세요"
-                 onkeydown="if(event.key==='Enter' && !event.isComposing) doWebSearch()">
+                 onkeyup="if(event.key==='Enter' && !event.isComposing) doWebSearch()">
           <div class="websearch-engine-wrap">
             <button class="websearch-engine-btn" id="websearch-engine-btn" onclick="toggleEngineDropdown()" onkeydown="handleEngineBtnKeydown(event)">
               <span id="websearch-engine-label">구글</span>
@@ -3500,7 +3500,8 @@ function _renderReportHabits(dayData, endDay, habitsList) {
         barsHtml += `<div class="report-habit-cell ${isDone ? 'done' : 'not-done'}${weekSepClass}" title="${d.date}: ${isDone ? '완료' : '미완료'}"></div>`;
       }
     }
-    const rate = activeDays > 0 ? Math.round(checks / activeDays * 100) : 0;
+    if (activeDays === 0) continue;
+    const rate = Math.round(checks / activeDays * 100);
     html += `<div class="report-habit-row">
       <div class="report-habit-name">
         <span>${_esc(habit.name)}</span>
