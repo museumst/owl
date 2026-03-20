@@ -986,6 +986,10 @@
     outline: none; padding: 0;
   }
   .memo-textarea::placeholder { color: var(--text-muted); opacity: 0.7; }
+  .memo-textarea::-webkit-scrollbar { width: 6px; }
+  .memo-textarea::-webkit-scrollbar-track { background: transparent; }
+  .memo-textarea::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .memo-textarea::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
   /* ── 온보딩 오버레이 ─────────────────────────────── */
   /* ── 위젯 해금 배너 ──────────────────────────────── */
