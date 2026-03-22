@@ -809,15 +809,19 @@
     #clock-time { cursor: pointer; user-select: none; transition: opacity 0.15s; }
     #clock-time:hover { opacity: 0.75; }
 
+    @keyframes dropDownCenter {
+      from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
     #timer-popup {
-      position: fixed; left: 50%; transform: translateX(-50%);
+      position: fixed; left: 50%; top: 20%; transform: translateX(-50%);
       z-index: 300; width: 300px;
       background: var(--bg-panel); border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       box-shadow: 0 10px 40px rgba(44,40,36,0.16);
       padding: 22px 22px 20px; display: none; text-align: center;
     }
-    #timer-popup.open { display: block; animation: dropDown 0.18s ease forwards; }
+    #timer-popup.open { display: block; animation: dropDownCenter 0.18s ease forwards; }
 
     .timer-modes {
       display: flex; gap: 5px; margin-bottom: 18px;
