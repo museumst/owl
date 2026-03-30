@@ -1295,7 +1295,7 @@
         <div class="input-row" style="margin-top:14px">
           <input type="text" id="websearch-input" class="text-input"
                  placeholder="검색어를 입력하세요"
-                 onkeyup="if(event.key==='Enter' && !event.isComposing) doWebSearch()">
+                 onkeydown="if(event.key==='Enter' && !event.isComposing && event.keyCode!==229) doWebSearch()">
           <div class="websearch-engine-wrap">
             <button class="websearch-engine-btn" id="websearch-engine-btn" onclick="toggleEngineDropdown()" onkeydown="handleEngineBtnKeydown(event)">
               <span id="websearch-engine-label">구글</span>
