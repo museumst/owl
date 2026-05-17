@@ -1113,36 +1113,38 @@
 <div id="top-nav">
   <button id="auth-btn" onclick="handleAuthClick()">
     <img id="auth-avatar" style="display:none" alt="">
-    <span id="auth-label">로그인</span>
+    <span id="auth-label" data-i18n="btn.login">로그인</span>
   </button>
+  <button id="lang-btn" onclick="setLang(currentLang==='ko'?'en':'ko')"
+          style="height:38px;border-radius:19px;border:1px solid var(--border);background:var(--bg-panel);color:var(--text-secondary);font-size:12px;font-family:var(--font-body);cursor:pointer;display:flex;align-items:center;gap:4px;padding:0 14px;box-shadow:var(--shadow);transition:all 0.2s;white-space:nowrap;">🌐 <span id="lang-btn-label">EN</span></button>
   <button id="settings-btn" onclick="toggleSettingsDropdown()" title="설정">⋮</button>
 </div>
 
 <!-- 드롭다운 -->
 <div id="settings-dropdown">
-  <div class="settings-search-row" onclick="openSearch(); toggleSettingsDropdown()">검색</div>
-  <div class="settings-search-row" id="report-menu-item" onclick="handleReportMenuClick()">월간 보고서</div>
+  <div class="settings-search-row" onclick="openSearch(); toggleSettingsDropdown()" data-i18n="menu.search">검색</div>
+  <div class="settings-search-row" id="report-menu-item" onclick="handleReportMenuClick()" data-i18n="report.title">월간 보고서</div>
   <div class="settings-search-row" onclick="toggleDarkMode()" style="justify-content:space-between">
-    <span>다크 모드</span>
+    <span data-i18n="menu.darkmode">다크 모드</span>
     <div class="toggle-switch" id="darkmode-toggle"></div>
   </div>
-  <div class="settings-search-row" onclick="openWidgetModal(); toggleSettingsDropdown()">위젯 설정</div>
+  <div class="settings-search-row" onclick="openWidgetModal(); toggleSettingsDropdown()" data-i18n="settings.widgets">위젯 설정</div>
 </div>
 
 <!-- 위젯 설정 모달 -->
 <!-- 기본 검색엔진 설정 모달 -->
 <div id="search-engine-modal-overlay" onclick="closeSearchEngineModal()">
   <div id="search-engine-modal" onclick="event.stopPropagation()">
-    <h3>기본 검색엔진 설정</h3>
+    <h3 data-i18n="label.default_search">기본 검색엔진 설정</h3>
     <div id="search-engine-radio-list"></div>
-    <button id="search-engine-modal-close" onclick="closeSearchEngineModal()">확인</button>
+    <button id="search-engine-modal-close" onclick="closeSearchEngineModal()" data-i18n="btn.confirm">확인</button>
   </div>
 </div>
 
 <div id="widget-modal-overlay" onclick="closeWidgetModal()">
   <div id="widget-modal" onclick="event.stopPropagation()">
     <div id="widget-modal-header">
-      <span id="widget-modal-title">위젯 표시 설정</span>
+      <span id="widget-modal-title" data-i18n="settings.widgets">위젯 표시 설정</span>
       <button id="widget-modal-close" onclick="closeWidgetModal()">×</button>
     </div>
     <div id="widget-modal-grid"></div>
@@ -1158,7 +1160,7 @@
       <button class="date-nav-btn" id="date-nav-prev" onclick="changeDate(-1)">‹</button>
       <span id="date-nav-display" onclick="openCalendar()" title="클릭하여 날짜 선택"></span>
       <button class="date-nav-btn" id="date-nav-next" onclick="changeDate(1)">›</button>
-      <button id="today-btn" onclick="goToToday()">오늘로</button>
+      <button id="today-btn" onclick="goToToday()" data-i18n="btn.today">오늘로</button>
     </div>
   </div>
 
@@ -1168,7 +1170,7 @@
     <div id="col-left">
       <div class="panel" id="panel-affirmations">
         <div class="affirm-section">
-          <div class="affirm-label">자기확언</div>
+          <div class="affirm-label" data-i18n="widget.affirmations">자기확언</div>
           <div class="affirm-quote empty" id="affirm-quote"
                onclick="startAffirmEdit('affirm')">
             클릭하여 나를 위한 확언을 적어보세요
@@ -1180,7 +1182,7 @@
         </div>
         <div class="affirm-divider"></div>
         <div class="affirm-section">
-          <div class="affirm-label">올해 목표</div>
+          <div class="affirm-label" data-i18n="label.affirmation_label">올해 목표</div>
           <div class="affirm-quote empty" id="goal-quote"
                onclick="startAffirmEdit('goal')">
             클릭하여 올해의 목표를 적어보세요
@@ -1193,12 +1195,12 @@
       </div>
 
       <div class="panel" id="panel-vision">
-        <div class="panel-title">비젼보드</div>
+        <div class="panel-title" data-i18n="widget.vision">비젼보드</div>
         <div id="vision-grid"></div>
         <div id="vision-input-row">
           <label id="vision-upload-label">
             <input type="file" id="vision-file-input" accept="image/*" onchange="addVisionImage()">
-            + 이미지 업로드
+            <span data-i18n="label.upload_image">+ 이미지 업로드</span>
           </label>
           <button id="vision-reset-btn" onclick="resetVisionBoard()" title="비전보드 초기화">↺</button>
         </div>
@@ -1210,10 +1212,10 @@
       <div class="panel" id="panel-todo">
         <div class="panel-title-row">
           <div style="display:flex;align-items:center;gap:7px">
-            <div class="panel-title" style="margin-bottom:0">오늘 할 일</div>
+            <div class="panel-title" style="margin-bottom:0" data-i18n="widget.todo">오늘 할 일</div>
             <span id="todo-time-total"></span>
           </div>
-          <button class="books-hide-label" onclick="carryOverTodos()">미완료 항목 이월</button>
+          <button class="books-hide-label" onclick="carryOverTodos()" data-i18n="btn.carryover">미완료 항목 이월</button>
         </div>
         <div class="input-row">
           <input type="text" id="todo-input" class="text-input"
@@ -1222,38 +1224,38 @@
           <input type="number" id="todo-mins-input" class="text-input todo-mins-input"
                  placeholder="분" min="1" inputmode="numeric"
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addTodo()">
-          <button class="add-btn" onclick="addTodo()">추가</button>
+          <button class="add-btn" onclick="addTodo()" data-i18n="btn.add">추가</button>
         </div>
         <ul class="list-items" id="todo-list"></ul>
-        <div class="empty-state" id="todo-empty">오늘의 할 일을 추가해보세요</div>
+        <div class="empty-state" id="todo-empty" data-i18n="empty.todo">오늘의 할 일을 추가해보세요</div>
       </div>
 
       <div class="panel" id="panel-monthly-todo">
-        <div class="panel-title">이번달 할 일</div>
+        <div class="panel-title" data-i18n="widget.monthly_todo">이번달 할 일</div>
         <div class="input-row">
           <input type="text" id="monthly-todo-input" class="text-input"
                  placeholder="할 일을 입력하세요"
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addMonthlyTodo()">
-          <button class="add-btn" onclick="addMonthlyTodo()">추가</button>
+          <button class="add-btn" onclick="addMonthlyTodo()" data-i18n="btn.add">추가</button>
         </div>
         <ul class="list-items" id="monthly-todo-list"></ul>
-        <div class="empty-state" id="monthly-todo-empty">이번달 할 일을 추가해보세요</div>
+        <div class="empty-state" id="monthly-todo-empty" data-i18n="empty.monthly_todo">이번달 할 일을 추가해보세요</div>
       </div>
 
       <div class="panel" id="panel-done">
-        <div class="panel-title">오늘 한 일</div>
+        <div class="panel-title" data-i18n="widget.done">오늘 한 일</div>
         <div class="input-row">
           <input type="text" id="done-input" class="text-input"
                  placeholder="한 일을 입력하세요"
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addDone()">
-          <button class="add-btn" onclick="addDone()">추가</button>
+          <button class="add-btn" onclick="addDone()" data-i18n="btn.add">추가</button>
         </div>
         <ul class="list-items" id="done-list"></ul>
-        <div class="empty-state" id="done-empty">기억하고 싶은 것들을 기록하세요</div>
+        <div class="empty-state" id="done-empty" data-i18n="empty.done">기억하고 싶은 것들을 기록하세요</div>
       </div>
 
       <div class="panel" id="panel-expenses">
-        <div class="panel-title">지출 내역</div>
+        <div class="panel-title" data-i18n="widget.expenses">지출 내역</div>
         <div class="input-row">
           <input type="text" id="expense-desc" class="text-input"
                  placeholder="내역" style="flex:2"
@@ -1262,26 +1264,26 @@
                  placeholder="금액" inputmode="numeric"
                  oninput="formatAmountInput(this)"
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addExpense()">
-          <button class="add-btn" onclick="addExpense()">추가</button>
+          <button class="add-btn" onclick="addExpense()" data-i18n="btn.add">추가</button>
         </div>
         <div id="expense-list"></div>
-        <div class="empty-state" id="expense-empty">오늘의 지출을 기록해보세요</div>
+        <div class="empty-state" id="expense-empty" data-i18n="empty.expenses">오늘의 지출을 기록해보세요</div>
         <div id="expense-total">
-          <span class="total-label">합계</span>
+          <span class="total-label" data-i18n="label.total">합계</span>
           <span class="total-amount" id="expense-total-amount">₩0</span>
         </div>
       </div>
 
       <div class="panel" id="panel-gratitude">
-        <div class="panel-title">감사일기</div>
+        <div class="panel-title" data-i18n="widget.gratitude">감사일기</div>
         <div class="input-row">
           <input type="text" id="gratitude-input" class="text-input"
                  placeholder="오늘 감사한 것은..."
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addGratitude()">
-          <button class="add-btn" onclick="addGratitude()">추가</button>
+          <button class="add-btn" onclick="addGratitude()" data-i18n="btn.add">추가</button>
         </div>
         <ul class="list-items" id="gratitude-list"></ul>
-        <div class="empty-state" id="gratitude-empty">오늘 감사한 것들을 적어보세요</div>
+        <div class="empty-state" id="gratitude-empty" data-i18n="empty.gratitude">오늘 감사한 것들을 적어보세요</div>
       </div>
     </div>
 
@@ -1289,8 +1291,8 @@
     <div id="col-right">
       <div class="panel" id="panel-websearch">
         <div class="panel-title-row">
-          <div class="panel-title" style="margin-bottom:0">웹 검색</div>
-          <button class="books-hide-label" onclick="openSearchEngineModal()">기본 검색엔진 설정</button>
+          <div class="panel-title" style="margin-bottom:0" data-i18n="widget.websearch">웹 검색</div>
+          <button class="books-hide-label" onclick="openSearchEngineModal()" data-i18n="label.default_search">기본 검색엔진 설정</button>
         </div>
         <div class="input-row" style="margin-top:14px">
           <input type="text" id="websearch-input" class="text-input"
@@ -1308,10 +1310,10 @@
 
       <div class="panel" id="panel-books">
         <div class="panel-title-row">
-          <div class="panel-title">독서 목록</div>
+          <div class="panel-title" data-i18n="widget.books">독서 목록</div>
           <label class="books-hide-label">
             <input type="checkbox" id="books-hide-done" onchange="toggleHideDoneBooks(this)">
-            다 읽은 목록 지우기
+            <span data-i18n="label.read_all">다 읽은 목록 지우기</span>
           </label>
         </div>
         <div class="input-row">
@@ -1319,41 +1321,41 @@
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addBook()">
           <input type="text" id="book-author-input" class="text-input" placeholder="저자"
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addBook()">
-          <button class="add-btn" onclick="addBook()">추가</button>
+          <button class="add-btn" onclick="addBook()" data-i18n="btn.add">추가</button>
         </div>
         <div id="book-list"></div>
-        <div class="empty-state" id="book-empty">읽고 싶은 책을 추가해보세요</div>
+        <div class="empty-state" id="book-empty" data-i18n="empty.books">읽고 싶은 책을 추가해보세요</div>
       </div>
 
       <div class="panel" id="panel-habits">
-        <div class="panel-title">습관 트래커</div>
+        <div class="panel-title" data-i18n="widget.habits">습관 트래커</div>
         <div class="input-row">
           <input type="text" id="habit-input" class="text-input"
                  placeholder="새 습관 추가..."
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addHabit()">
-          <button class="add-btn" onclick="addHabit()">추가</button>
+          <button class="add-btn" onclick="addHabit()" data-i18n="btn.add">추가</button>
         </div>
         <div id="habit-list"></div>
-        <div class="empty-state" id="habit-empty">추적할 습관을 추가해보세요</div>
+        <div class="empty-state" id="habit-empty" data-i18n="empty.habits">추적할 습관을 추가해보세요</div>
         <div id="habit-progress"></div>
       </div>
 
       <div class="panel" id="panel-youtube">
-        <div class="panel-title">나중에 볼 유튜브</div>
+        <div class="panel-title" data-i18n="widget.youtube">나중에 볼 유튜브</div>
         <div class="input-row">
           <input type="url" id="youtube-url-input" class="text-input"
                  placeholder="YouTube URL을 붙여넣으세요"
                  onkeydown="if(event.key==='Enter' && !event.isComposing) addYoutube()">
-          <button class="add-btn" onclick="addYoutube()">추가</button>
+          <button class="add-btn" onclick="addYoutube()" data-i18n="btn.add">추가</button>
         </div>
         <div id="youtube-card-list"></div>
-        <div class="empty-state" id="youtube-empty">나중에 볼 영상을 저장해두세요</div>
+        <div class="empty-state" id="youtube-empty" data-i18n="empty.youtube">나중에 볼 영상을 저장해두세요</div>
       </div>
 
       <div class="panel" id="panel-bookmarks">
-        <div class="panel-title">즐겨찾기</div>
+        <div class="panel-title" data-i18n="widget.bookmarks">즐겨찾기</div>
         <div class="bookmark-grid" id="bookmark-grid"></div>
-        <div class="empty-state" id="bookmark-empty" style="display:none">즐겨찾는 사이트를 추가해보세요</div>
+        <div class="empty-state" id="bookmark-empty" style="display:none" data-i18n="empty.bookmarks">즐겨찾는 사이트를 추가해보세요</div>
         <div class="bookmark-form" id="bookmark-form">
           <div class="bookmark-form-row">
             <input type="url" id="bookmark-url-input" class="text-input" placeholder="URL (예: https://naver.com)"
@@ -1362,16 +1364,16 @@
           <div class="bookmark-form-row">
             <input type="text" id="bookmark-name-input" class="text-input" placeholder="이름 (예: 네이버)"
                    onkeydown="if(event.key==='Enter'&&!event.isComposing)addBookmark()">
-            <button class="add-btn" onclick="addBookmark()">추가</button>
-            <button class="add-btn" style="background:var(--text-muted)" onclick="hideBookmarkForm()">취소</button>
+            <button class="add-btn" onclick="addBookmark()" data-i18n="btn.add">추가</button>
+            <button class="add-btn" style="background:var(--text-muted)" onclick="hideBookmarkForm()" data-i18n="btn.cancel">취소</button>
           </div>
         </div>
       </div>
 
       <div class="panel" id="panel-memo">
         <div class="panel-title-row">
-          <div class="panel-title" style="margin-bottom:0">메모</div>
-          <button class="books-hide-label" onclick="clearMemo()">지우기</button>
+          <div class="panel-title" style="margin-bottom:0" data-i18n="widget.memo">메모</div>
+          <button class="books-hide-label" onclick="clearMemo()" data-i18n="btn.clear">지우기</button>
         </div>
         <textarea id="memo-textarea" class="memo-textarea"
                   placeholder="여기에 메모하세요..."
@@ -1384,7 +1386,7 @@
   <!-- Monthly Report View -->
   <div id="report-view">
     <div class="report-header">
-      <div class="report-title">월간 보고서</div>
+      <div class="report-title" data-i18n="report.title">월간 보고서</div>
       <div class="report-month-nav">
         <button onclick="changeReportMonth(-1)">‹</button>
         <span class="report-month-label" id="report-month-label"></span>
@@ -1397,6 +1399,255 @@
 </div>
 
 <script>
+/* ================================================================
+   i18n — 한국어 / English 언어 지원
+================================================================ */
+const TRANSLATIONS = {
+  ko: {
+    'widget.affirmations': '자기확언',
+    'widget.vision': '비젼보드',
+    'widget.monthly_todo': '이번달 할 일',
+    'widget.todo': '오늘 할 일',
+    'widget.done': '오늘 한 일',
+    'widget.expenses': '지출 내역',
+    'widget.gratitude': '감사일기',
+    'widget.websearch': '웹 검색',
+    'widget.books': '독서 목록',
+    'widget.habits': '습관 트래커',
+    'widget.youtube': '나중에 볼 유튜브',
+    'widget.memo': '메모',
+    'widget.bookmarks': '즐겨찾기',
+    'btn.add': '추가',
+    'btn.delete': '삭제',
+    'btn.clear': '지우기',
+    'btn.start': '▶ 시작',
+    'btn.pause': '⏸ 일시정지',
+    'btn.reset': '↺ 초기화',
+    'btn.login': '로그인',
+    'btn.logout': '로그아웃',
+    'btn.cancel': '취소',
+    'btn.today': '오늘로',
+    'btn.go_today': '오늘로 이동',
+    'btn.carryover': '미완료 항목 이월',
+    'btn.confirm': '확인',
+    'placeholder.todo': '할 일을 입력하세요',
+    'placeholder.monthly_todo': '할 일을 입력하세요',
+    'placeholder.done': '한 일을 입력하세요',
+    'placeholder.search': '검색어를 입력하세요',
+    'placeholder.search_empty': '검색어를 입력하세요',
+    'placeholder.habit': '새 습관 추가...',
+    'placeholder.expense_desc': '내역',
+    'placeholder.expense_amount': '금액',
+    'placeholder.youtube': 'YouTube URL을 붙여넣으세요',
+    'placeholder.memo': '여기에 메모하세요...',
+    'placeholder.book_title': '제목',
+    'placeholder.book_author': '저자',
+    'placeholder.bookmark_url': 'URL (예: https://naver.com)',
+    'placeholder.bookmark_name': '이름 (예: 네이버)',
+    'placeholder.gratitude': '오늘 감사한 것은...',
+    'placeholder.search_integrated': '할 일, 기록, 지출 통합 검색...',
+    'empty.todo': '오늘의 할 일을 추가해보세요',
+    'empty.monthly_todo': '이번달 할 일을 추가해보세요',
+    'empty.done': '기억하고 싶은 것들을 기록하세요',
+    'empty.expenses': '오늘의 지출을 기록해보세요',
+    'empty.gratitude': '오늘 감사한 것들을 적어보세요',
+    'empty.habits': '추적할 습관을 추가해보세요',
+    'empty.youtube': '나중에 볼 영상을 저장해두세요',
+    'empty.bookmarks': '즐겨찾는 사이트를 추가해보세요',
+    'empty.books': '읽고 싶은 책을 추가해보세요',
+    'label.min': '분',
+    'label.today_goal': '오늘의 달성',
+    'label.total': '합계',
+    'label.affirmation_placeholder': '"나는 원하는걸 다 가질거야."',
+    'label.annual_goal_placeholder': '"10억을 벌자"',
+    'label.affirmation_label': '올해 목표',
+    'label.read_all': '다 읽은 목록 지우기',
+    'label.default_search': '기본 검색엔진 설정',
+    'label.websearch_default': '기본 검색엔진',
+    'label.upload_image': '+ 이미지 업로드',
+    'timer.focus': '🍅 포모도로',
+    'timer.short': '☕ 짧은 휴식',
+    'timer.long': '🌙 긴 휴식',
+    'report.title': '월간 보고서',
+    'settings.widgets': '위젯 설정',
+    'menu.search': '검색',
+    'menu.darkmode': '다크 모드',
+    'habits.progress': '오늘의 달성',
+    'search.badge.todo': '할 일',
+    'search.badge.done': '기록',
+    'search.badge.expense': '지출',
+    'search.no_results': '검색 결과가 없어요',
+    'report.back': '← 되돌아가기',
+  },
+  en: {
+    'widget.affirmations': 'Affirmations',
+    'widget.vision': 'Vision Board',
+    'widget.monthly_todo': 'Monthly Tasks',
+    'widget.todo': "Today's Tasks",
+    'widget.done': "Today's Done",
+    'widget.expenses': 'Expenses',
+    'widget.gratitude': 'Gratitude',
+    'widget.websearch': 'Web Search',
+    'widget.books': 'Reading List',
+    'widget.habits': 'Habit Tracker',
+    'widget.youtube': 'Watch Later',
+    'widget.memo': 'Memo',
+    'widget.bookmarks': 'Bookmarks',
+    'btn.add': 'Add',
+    'btn.delete': 'Delete',
+    'btn.clear': 'Clear',
+    'btn.start': '▶ Start',
+    'btn.pause': '⏸ Pause',
+    'btn.reset': '↺ Reset',
+    'btn.login': 'Login',
+    'btn.logout': 'Logout',
+    'btn.cancel': 'Cancel',
+    'btn.today': 'Today',
+    'btn.go_today': 'Go to Today',
+    'btn.carryover': 'Carry over incomplete',
+    'btn.confirm': 'OK',
+    'placeholder.todo': 'Add a task...',
+    'placeholder.monthly_todo': 'Add a task...',
+    'placeholder.done': 'What did you accomplish?',
+    'placeholder.search': 'Search...',
+    'placeholder.search_empty': 'Type to search...',
+    'placeholder.habit': 'Add new habit...',
+    'placeholder.expense_desc': 'Description',
+    'placeholder.expense_amount': 'Amount',
+    'placeholder.youtube': 'Paste YouTube URL',
+    'placeholder.memo': 'Write a note...',
+    'placeholder.book_title': 'Title',
+    'placeholder.book_author': 'Author',
+    'placeholder.bookmark_url': 'URL (e.g. https://google.com)',
+    'placeholder.bookmark_name': 'Name (e.g. Google)',
+    'placeholder.gratitude': 'What are you grateful for...',
+    'placeholder.search_integrated': 'Search tasks, records, expenses...',
+    'empty.todo': 'Add your tasks for today',
+    'empty.monthly_todo': 'Add your tasks for this month',
+    'empty.done': 'Record what you want to remember',
+    'empty.expenses': 'Track your expenses for today',
+    'empty.gratitude': 'What are you grateful for today?',
+    'empty.habits': 'Add habits to track',
+    'empty.youtube': 'Save videos to watch later',
+    'empty.bookmarks': 'Add your favorite sites',
+    'empty.books': 'Add books you want to read',
+    'label.min': 'min',
+    'label.today_goal': "Today's Goal",
+    'label.total': 'Total',
+    'label.affirmation_placeholder': '"I can have everything I want."',
+    'label.annual_goal_placeholder': '"Earn $1M this year"',
+    'label.affirmation_label': 'Annual Goal',
+    'label.read_all': 'Clear read books',
+    'label.default_search': 'Set default engine',
+    'label.websearch_default': 'Default Engine',
+    'label.upload_image': '+ Upload Image',
+    'timer.focus': '🍅 Pomodoro',
+    'timer.short': '☕ Short Break',
+    'timer.long': '🌙 Long Break',
+    'report.title': 'Monthly Report',
+    'settings.widgets': 'Widget Settings',
+    'menu.search': 'Search',
+    'menu.darkmode': 'Dark Mode',
+    'habits.progress': "Today's Goal",
+    'search.badge.todo': 'Task',
+    'search.badge.done': 'Done',
+    'search.badge.expense': 'Expense',
+    'search.no_results': 'No results found',
+    'report.back': '← Back',
+  }
+};
+
+let currentLang = localStorage.getItem('ui_language') || 'ko';
+
+function t(key) {
+  return (TRANSLATIONS[currentLang] || TRANSLATIONS['ko'])[key] || key;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('ui_language', lang);
+  applyTranslations();
+}
+
+function applyTranslations() {
+  // Update lang button label: show the opposite language
+  const langBtnLabel = document.getElementById('lang-btn-label');
+  if (langBtnLabel) langBtnLabel.textContent = currentLang === 'ko' ? 'EN' : 'KO';
+
+  // Update html lang attribute
+  document.documentElement.lang = currentLang;
+
+  // Update all elements with data-i18n attribute
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) el.textContent = val;
+  });
+
+  // Update placeholders
+  const placeholderMap = {
+    'todo-input':           'placeholder.todo',
+    'monthly-todo-input':   'placeholder.monthly_todo',
+    'done-input':           'placeholder.done',
+    'websearch-input':      'placeholder.search',
+    'habit-input':          'placeholder.habit',
+    'expense-desc':         'placeholder.expense_desc',
+    'expense-amount':       'placeholder.expense_amount',
+    'youtube-url-input':    'placeholder.youtube',
+    'memo-textarea':        'placeholder.memo',
+    'book-title-input':     'placeholder.book_title',
+    'book-author-input':    'placeholder.book_author',
+    'bookmark-url-input':   'placeholder.bookmark_url',
+    'bookmark-name-input':  'placeholder.bookmark_name',
+    'gratitude-input':      'placeholder.gratitude',
+    'search-input':         'placeholder.search_integrated',
+  };
+  Object.entries(placeholderMap).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) el.placeholder = t(key);
+  });
+
+  // Update placeholder for mins input
+  const minsInput = document.getElementById('todo-mins-input');
+  if (minsInput) minsInput.placeholder = t('label.min');
+
+  // Update auth label only when logged out (avoid overwriting the user's name)
+  if (!currentUser) {
+    const authLabel = document.getElementById('auth-label');
+    if (authLabel) authLabel.textContent = t('btn.login');
+  }
+
+  // Update timer start button text (respects running/paused state)
+  const startBtn = document.getElementById('timer-start-btn');
+  if (startBtn) {
+    if (timerRunning) {
+      startBtn.textContent = t('btn.pause');
+    } else {
+      // Check if timer was paused mid-run (seconds < total)
+      startBtn.textContent = (timerSeconds < timerTotal && timerSeconds > 0)
+        ? t('btn.pause').replace('⏸', '▶').replace('Pause', 'Continue')
+        : t('btn.start');
+    }
+  }
+
+  // Update report menu item
+  const reportItem = document.getElementById('report-menu-item');
+  if (reportItem) {
+    const app = document.getElementById('app');
+    if (app && app.classList.contains('report-mode')) {
+      reportItem.textContent = t('report.back');
+    } else {
+      reportItem.textContent = t('report.title');
+    }
+  }
+
+  // Re-render date display (day names localize)
+  if (typeof viewDate !== 'undefined' && viewDate) updateDateNav();
+
+  // Re-render affirmation empty states
+  if (typeof loadAffirmations === 'function') loadAffirmations();
+}
+
 /* ================================================================
    FIREBASE 초기화
 ================================================================ */
@@ -1451,6 +1702,12 @@ let viewDate = '';
 
 function formatDateDisplay(str) {
   const [y,m,d] = str.split('-').map(Number);
+  if (currentLang === 'en') {
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const day = new Date(y, m-1, d).getDay();
+    return `${days[day]}, ${months[m-1]} ${d}, ${y}`;
+  }
   const days = ['일','월','화','수','목','금','토'];
   const day = new Date(y, m-1, d).getDay();
   return `${y}년 ${m}월 ${d}일 ${days[day]}요일`;
@@ -1498,10 +1755,18 @@ function closeCalendar() {
 }
 
 function renderCalendar() {
-  document.getElementById('cal-month-label').textContent = `${calYear}년 ${calMonth}월`;
+  if (currentLang === 'en') {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('cal-month-label').textContent = `${months[calMonth-1]} ${calYear}`;
+  } else {
+    document.getElementById('cal-month-label').textContent = `${calYear}년 ${calMonth}월`;
+  }
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
-  ['일','월','화','수','목','금','토'].forEach(d => {
+  const dayHeaders = currentLang === 'en'
+    ? ['Su','Mo','Tu','We','Th','Fr','Sa']
+    : ['일','월','화','수','목','금','토'];
+  dayHeaders.forEach(d => {
     const h = document.createElement('div'); h.className = 'cal-day-header'; h.textContent = d; grid.appendChild(h);
   });
   const today = todayKey();
@@ -1558,14 +1823,14 @@ function openSearch() {
 function closeSearch() {
   document.getElementById('search-modal').classList.remove('open');
   document.getElementById('search-input').value = '';
-  document.getElementById('search-results').innerHTML = '<div class="search-empty">검색어를 입력하세요</div>';
+  document.getElementById('search-results').innerHTML = `<div class="search-empty">${t('placeholder.search_empty')}</div>`;
 }
 
 function searchAllItems() {
   const query = document.getElementById('search-input').value.trim();
   const resultsEl = document.getElementById('search-results');
   if (!query) {
-    resultsEl.innerHTML = '<div class="search-empty">검색어를 입력하세요</div>';
+    resultsEl.innerHTML = `<div class="search-empty">${t('placeholder.search_empty')}</div>`;
     return;
   }
   const qLower = query.toLowerCase();
@@ -1595,7 +1860,7 @@ function searchAllItems() {
   const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
   resultsEl.innerHTML = '';
   if (!dates.length) {
-    resultsEl.innerHTML = '<div class="search-empty">검색 결과가 없어요</div>';
+    resultsEl.innerHTML = `<div class="search-empty">${t('search.no_results')}</div>`;
     return;
   }
 
@@ -1620,7 +1885,7 @@ function searchAllItems() {
       badge.className = 'search-badge ' + (
         type === 'todo' ? 'badge-todo' : type === 'done' ? 'badge-done' : 'badge-expense'
       );
-      badge.textContent = type === 'todo' ? '할 일' : type === 'done' ? '기록' : '지출';
+      badge.textContent = type === 'todo' ? t('search.badge.todo') : type === 'done' ? t('search.badge.done') : t('search.badge.expense');
       itemEl.appendChild(badge);
 
       // Highlighted text (XSS-safe)
@@ -1680,8 +1945,8 @@ async function loadAffirmations() {
 }
 
 function renderAffirmPanel(affirm, goal) {
-  _setAffirmDisplay('affirm-quote', affirm, '클릭하여 나를 위한 확언을 적어보세요');
-  _setAffirmDisplay('goal-quote',   goal,   '클릭하여 올해의 목표를 적어보세요');
+  _setAffirmDisplay('affirm-quote', affirm, currentLang === 'ko' ? '클릭하여 나를 위한 확언을 적어보세요' : 'Click to add your affirmation');
+  _setAffirmDisplay('goal-quote',   goal,   currentLang === 'ko' ? '클릭하여 올해의 목표를 적어보세요' : 'Click to add your annual goal');
 }
 
 function _setAffirmDisplay(elId, text, placeholder) {
@@ -2043,7 +2308,9 @@ async function carryOverTodos() {
   const btn = document.querySelector('#panel-todo button.books-hide-label');
   if (btn) {
     const orig = btn.textContent;
-    btn.textContent = added > 0 ? `✓ ${added}개 이월됨` : '이월할 항목 없음';
+    btn.textContent = added > 0
+      ? (currentLang === 'ko' ? `✓ ${added}개 이월됨` : `✓ ${added} carried over`)
+      : (currentLang === 'ko' ? '이월할 항목 없음' : 'Nothing to carry over');
     btn.disabled = true;
     setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
   }
@@ -2563,7 +2830,7 @@ function renderHabits(habits, checks) {
   progress.innerHTML = '';
   const wrap = document.createElement('div'); wrap.className = 'habit-progress';
   const row  = document.createElement('div'); row.className = 'habit-progress-row';
-  const lbl  = document.createElement('span'); lbl.className = 'habit-progress-label'; lbl.textContent = '오늘의 달성';
+  const lbl  = document.createElement('span'); lbl.className = 'habit-progress-label'; lbl.textContent = t('habits.progress');
   const cnt  = document.createElement('span'); cnt.className = 'habit-progress-count'; cnt.textContent = `${doneCount} / ${activeHabits.length}`;
   row.append(lbl, cnt);
   const bar  = document.createElement('div'); bar.className = 'habit-progress-bar';
@@ -2613,19 +2880,19 @@ async function deleteHabit(habitId) {
 const WIDGET_VIS_KEY = 'widget_visibility_b';
 
 const WIDGET_META = [
-  { id: 'panel-affirmations', name: '자기확언 · 목표' },
-  { id: 'panel-vision',       name: '비젼보드' },
-  { id: 'panel-todo',         name: '오늘 할 일' },
-  { id: 'panel-monthly-todo', name: '이번달 할 일' },
-  { id: 'panel-done',         name: '오늘 한 일' },
-  { id: 'panel-expenses',     name: '지출 내역' },
-  { id: 'panel-gratitude',    name: '감사일기' },
-  { id: 'panel-websearch',    name: '웹 검색' },
-  { id: 'panel-books',        name: '독서 목록' },
-  { id: 'panel-habits',       name: '습관 트래커' },
-  { id: 'panel-youtube',      name: '나중에 볼 유튜브' },
-  { id: 'panel-memo',         name: '메모' },
-  { id: 'panel-bookmarks',    name: '즐겨찾기' },
+  { id: 'panel-affirmations', key: 'widget.affirmations', nameKo: '자기확언 · 목표', nameEn: 'Affirmations' },
+  { id: 'panel-vision',       key: 'widget.vision',       nameKo: '비젼보드',         nameEn: 'Vision Board' },
+  { id: 'panel-todo',         key: 'widget.todo',         nameKo: '오늘 할 일',       nameEn: "Today's Tasks" },
+  { id: 'panel-monthly-todo', key: 'widget.monthly_todo', nameKo: '이번달 할 일',     nameEn: 'Monthly Tasks' },
+  { id: 'panel-done',         key: 'widget.done',         nameKo: '오늘 한 일',       nameEn: "Today's Done" },
+  { id: 'panel-expenses',     key: 'widget.expenses',     nameKo: '지출 내역',        nameEn: 'Expenses' },
+  { id: 'panel-gratitude',    key: 'widget.gratitude',    nameKo: '감사일기',         nameEn: 'Gratitude' },
+  { id: 'panel-websearch',    key: 'widget.websearch',    nameKo: '웹 검색',          nameEn: 'Web Search' },
+  { id: 'panel-books',        key: 'widget.books',        nameKo: '독서 목록',        nameEn: 'Reading List' },
+  { id: 'panel-habits',       key: 'widget.habits',       nameKo: '습관 트래커',      nameEn: 'Habit Tracker' },
+  { id: 'panel-youtube',      key: 'widget.youtube',      nameKo: '나중에 볼 유튜브', nameEn: 'Watch Later' },
+  { id: 'panel-memo',         key: 'widget.memo',         nameKo: '메모',             nameEn: 'Memo' },
+  { id: 'panel-bookmarks',    key: 'widget.bookmarks',    nameKo: '즐겨찾기',         nameEn: 'Bookmarks' },
 ];
 
 function updateColumnVisibility() {
@@ -2639,11 +2906,12 @@ function updateColumnVisibility() {
 function renderWidgetModal() {
   const grid = document.getElementById('widget-modal-grid');
   grid.innerHTML = '';
-  WIDGET_META.forEach(({ id, name }) => {
+  WIDGET_META.forEach(({ id, nameKo, nameEn }) => {
     const isVisible = !document.getElementById(id)?.classList.contains('widget-hidden');
     const item = document.createElement('div');
     item.className = 'settings-item';
-    item.innerHTML = `<span class="settings-item-name">${name}</span><div class="toggle-switch${isVisible ? ' on' : ''}"></div>`;
+    const displayName = currentLang === 'en' ? nameEn : nameKo;
+    item.innerHTML = `<span class="settings-item-name">${displayName}</span><div class="toggle-switch${isVisible ? ' on' : ''}"></div>`;
     item.onclick = () => toggleWidget(id);
     grid.appendChild(item);
   });
@@ -2770,7 +3038,7 @@ function setTimerMode(mode) {
   const arc = document.getElementById('timer-arc');
   arc.classList.toggle('break-mode', mode !== 'work');
   const startBtn = document.getElementById('timer-start-btn');
-  startBtn.textContent = '▶ 시작';
+  startBtn.textContent = t('btn.start');
   startBtn.classList.add('primary');
   updateTimerDisplay();
 }
@@ -2785,7 +3053,7 @@ function startTimer() {
   timerRunning = true;
   timerEndTime = Date.now() + timerSeconds * 1000;  // 절대 종료 시각 기록
   const startBtn = document.getElementById('timer-start-btn');
-  startBtn.textContent = '⏸ 일시정지';
+  startBtn.textContent = t('btn.pause');
   timerInterval = setInterval(() => {
     // 틱 카운트 대신 현재 시각 기준으로 남은 시간 계산 → 탭 스로틀링 무관
     timerSeconds = Math.max(0, Math.round((timerEndTime - Date.now()) / 1000));
@@ -2793,7 +3061,7 @@ function startTimer() {
     if (timerSeconds === 0) {
       clearInterval(timerInterval); timerInterval = null;
       timerRunning = false;
-      startBtn.textContent = '▶ 시작';
+      startBtn.textContent = t('btn.start');
       document.title = ORIGINAL_TITLE;
       if (document.hidden) {
         sendTimerNotification(timerMode);  // 백그라운드: 시스템 알림
@@ -2820,7 +3088,7 @@ function startTimer() {
 function pauseTimer() {
   timerRunning = false;
   clearInterval(timerInterval); timerInterval = null;
-  document.getElementById('timer-start-btn').textContent = '▶ 계속';
+  document.getElementById('timer-start-btn').textContent = t('btn.start');
   document.title = ORIGINAL_TITLE;
 }
 
@@ -2868,7 +3136,7 @@ function resetTimer() {
   timerRunning = false;
   clearInterval(timerInterval); timerInterval = null;
   timerSeconds = timerTotal = TIMER_DURATIONS[timerMode];
-  document.getElementById('timer-start-btn').textContent = '▶ 시작';
+  document.getElementById('timer-start-btn').textContent = t('btn.start');
   document.title = ORIGINAL_TITLE;
   updateTimerDisplay();
 }
@@ -3241,6 +3509,7 @@ async function init() {
   initWidgetDrag();
   initSearchEngine();
   initDarkMode();
+  applyTranslations();
 }
 
 /* ================================================================
@@ -3385,10 +3654,10 @@ function updateAuthUI() {
       avatar.src = currentUser.photoURL;
       avatar.style.display = 'block';
     }
-    label.textContent = currentUser.displayName?.split(' ')[0] || '로그아웃';
+    label.textContent = currentUser.displayName?.split(' ')[0] || t('btn.logout');
   } else {
     avatar.style.display = 'none';
-    label.textContent = '로그인';
+    label.textContent = t('btn.login');
   }
 }
 
@@ -3415,6 +3684,8 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
+// Apply translations early so UI is correct before init resolves
+applyTranslations();
 init();
 
 /* ================================================================
@@ -3427,14 +3698,14 @@ function openReport() {
   _reportYear = y; _reportMonth = m;
   document.getElementById('app').classList.add('report-mode');
   const item = document.getElementById('report-menu-item');
-  if (item) item.textContent = '← 되돌아가기';
+  if (item) item.textContent = t('report.back');
   renderReport();
 }
 
 function closeReport() {
   document.getElementById('app').classList.remove('report-mode');
   const item = document.getElementById('report-menu-item');
-  if (item) item.textContent = '월간 보고서';
+  if (item) item.textContent = t('report.title');
 }
 
 function handleReportMenuClick() {
@@ -3490,7 +3761,12 @@ function toggleRptSection(id) {
 async function renderReport() {
   const y = _reportYear, m = _reportMonth;
   const endDay = _rEndDay(y, m);
-  document.getElementById('report-month-label').textContent = `${y}년 ${m}월`;
+  if (currentLang === 'en') {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('report-month-label').textContent = `${months[m-1]} ${y}`;
+  } else {
+    document.getElementById('report-month-label').textContent = `${y}년 ${m}월`;
+  }
 
   const lastDay = new Date(y, m, 0).getDate();
   const dayKeys = Array.from({length: lastDay}, (_, i) => _rDateKey(y, m, i+1));
@@ -3813,7 +4089,7 @@ function _renderReportExpenses(dayData, endDay) {
       <button id="search-close" onclick="closeSearch()">✕</button>
     </div>
     <div id="search-results">
-      <div class="search-empty">검색어를 입력하세요</div>
+      <div class="search-empty" data-i18n="placeholder.search_empty">검색어를 입력하세요</div>
     </div>
   </div>
 </div>
@@ -3821,9 +4097,9 @@ function _renderReportExpenses(dayData, endDay) {
 <!-- Pomodoro Timer Popup -->
 <div id="timer-popup">
   <div class="timer-modes">
-    <button class="timer-mode-btn active" id="timer-btn-work"  onclick="setTimerMode('work')">🍅 포모도로</button>
-    <button class="timer-mode-btn"        id="timer-btn-short" onclick="setTimerMode('short')">☕ 짧은 휴식</button>
-    <button class="timer-mode-btn"        id="timer-btn-long"  onclick="setTimerMode('long')">🌙 긴 휴식</button>
+    <button class="timer-mode-btn active" id="timer-btn-work"  onclick="setTimerMode('work')" data-i18n="timer.focus">🍅 포모도로</button>
+    <button class="timer-mode-btn"        id="timer-btn-short" onclick="setTimerMode('short')" data-i18n="timer.short">☕ 짧은 휴식</button>
+    <button class="timer-mode-btn"        id="timer-btn-long"  onclick="setTimerMode('long')" data-i18n="timer.long">🌙 긴 휴식</button>
   </div>
   <div class="timer-svg-wrap">
     <svg class="timer-circle" viewBox="0 0 120 120">
@@ -3835,8 +4111,8 @@ function _renderReportExpenses(dayData, endDay) {
   </div>
   <div class="timer-pomo-dots" id="timer-pomo-dots"></div>
   <div class="timer-controls">
-    <button class="timer-ctrl-btn primary" id="timer-start-btn" onclick="toggleTimer()">▶ 시작</button>
-    <button class="timer-ctrl-btn"                              onclick="resetTimer()">↺ 초기화</button>
+    <button class="timer-ctrl-btn primary" id="timer-start-btn" onclick="toggleTimer()" data-i18n="btn.start">▶ 시작</button>
+    <button class="timer-ctrl-btn"                              onclick="resetTimer()" data-i18n="btn.reset">↺ 초기화</button>
   </div>
 </div>
 
@@ -3849,7 +4125,7 @@ function _renderReportExpenses(dayData, endDay) {
   </div>
   <div id="cal-grid"></div>
   <div id="cal-footer">
-    <button id="cal-today-link" onclick="selectCalDay(todayKey())">오늘로 이동</button>
+    <button id="cal-today-link" onclick="selectCalDay(todayKey())" data-i18n="btn.go_today">오늘로 이동</button>
   </div>
 </div>
 
