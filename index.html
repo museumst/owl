@@ -3376,10 +3376,22 @@ function detectSearchEngine() {
   let hostname = '';
   try { hostname = new URL(raw).hostname.replace(/^www\./, ''); } catch(e) { hostname = raw; }
 
-  // DB에서 매칭 (hostname 또는 subdomain 포함 full hostname)
-  const match = KNOWN_ENGINES_DB[hostname] || KNOWN_ENGINES_DB[new URL(raw).hostname] || null;
   const msg = document.getElementById('se-detect-msg');
   const manualRow = document.getElementById('se-manual-row');
+
+  // {} 가 이미 포함된 URL → 패턴 직접 입력으로 간주, 이름만 입력받아 바로 추가
+  if (raw.includes('{}')) {
+    document.getElementById('se-name-input').value = hostname;
+    document.getElementById('se-pattern-input').value = raw;
+    msg.textContent = '이름을 입력 후 확인을 눌러주세요.';
+    msg.style.color = 'var(--text-muted)';
+    manualRow.classList.add('show');
+    document.getElementById('se-name-input').focus();
+    return;
+  }
+
+  // DB에서 매칭 (hostname 또는 subdomain 포함 full hostname)
+  const match = KNOWN_ENGINES_DB[hostname] || KNOWN_ENGINES_DB[new URL(raw).hostname] || null;
 
   if (match) {
     // 자동 감지 성공 → 바로 추가
