@@ -1130,7 +1130,7 @@
     <img id="auth-avatar" style="display:none" alt="">
     <span id="auth-label" data-i18n="btn.login">로그인</span>
   </button>
-  <button id="lang-btn" onclick="setLang(currentLang==='ko'?'en':'ko')"
+  <button id="lang-btn" onclick="cycleLang()"
           style="height:38px;border-radius:19px;border:1px solid var(--border);background:var(--bg-panel);color:var(--text-secondary);font-size:12px;font-family:var(--font-body);cursor:pointer;display:flex;align-items:center;gap:4px;padding:0 14px;box-shadow:var(--shadow);transition:all 0.2s;white-space:nowrap;">🌐 <span id="lang-btn-label">EN</span></button>
   <button id="settings-btn" onclick="toggleSettingsDropdown()" title="설정">⋮</button>
 </div>
@@ -1510,6 +1510,7 @@ const TRANSLATIONS = {
     'search.badge.expense': '지출',
     'search.no_results': '검색 결과가 없어요',
     'report.back': '← 되돌아가기',
+    'report.collapse': '목록 접기',
     'report.summary': '📋 요약',
     'report.active_days': '활동한 날',
     'report.todo_rate': '할 일 완료율',
@@ -1542,6 +1543,10 @@ const TRANSLATIONS = {
     'unit.day': '일',
     'unit.book': '권',
     'unit.item': '개',
+    'affirm.placeholder': '클릭하여 나를 위한 확언을 적어보세요',
+    'goal.placeholder': '클릭하여 올해의 목표를 적어보세요',
+    'carryover.done': '개 이월됨',
+    'carryover.empty': '이월할 항목 없음',
   },
   en: {
     'widget.affirmations': 'Affirmations',
@@ -1618,6 +1623,7 @@ const TRANSLATIONS = {
     'search.badge.expense': 'Expense',
     'search.no_results': 'No results found',
     'report.back': '← Back',
+    'report.collapse': 'Collapse',
     'report.summary': '📋 Summary',
     'report.active_days': 'Active Days',
     'report.todo_rate': 'Task Completion',
@@ -1650,6 +1656,113 @@ const TRANSLATIONS = {
     'unit.day': '',
     'unit.book': '',
     'unit.item': '',
+    'affirm.placeholder': 'Click to add your affirmation',
+    'goal.placeholder': 'Click to add your annual goal',
+    'carryover.done': ' carried over',
+    'carryover.empty': 'Nothing to carry over',
+  },
+  ja: {
+    'widget.affirmations': 'アファメーション',
+    'widget.vision': 'ビジョンボード',
+    'widget.monthly_todo': '今月のタスク',
+    'widget.todo': '今日のタスク',
+    'widget.done': '今日の記録',
+    'widget.expenses': '支出記録',
+    'widget.gratitude': '感謝日記',
+    'widget.websearch': 'ウェブ検索',
+    'widget.books': '読書リスト',
+    'widget.habits': '習慣トラッカー',
+    'widget.youtube': 'あとで見る',
+    'widget.memo': 'メモ',
+    'widget.bookmarks': 'お気に入り',
+    'btn.add': '追加',
+    'btn.delete': '削除',
+    'btn.clear': 'クリア',
+    'btn.start': '▶ 開始',
+    'btn.pause': '⏸ 一時停止',
+    'btn.reset': '↺ リセット',
+    'btn.login': 'ログイン',
+    'btn.logout': 'ログアウト',
+    'btn.cancel': 'キャンセル',
+    'btn.confirm': 'OK',
+    'btn.carryover': '未完了を翌日へ',
+    'placeholder.todo': 'タスクを入力...',
+    'placeholder.monthly_todo': 'タスクを入力...',
+    'placeholder.done': '記録を入力...',
+    'placeholder.search': '検索...',
+    'placeholder.habit': '新しい習慣を追加...',
+    'placeholder.expense_desc': '内容',
+    'placeholder.expense_amount': '金額',
+    'placeholder.youtube': 'YouTube URLを貼り付け',
+    'placeholder.memo': 'ここにメモ...',
+    'placeholder.book_title': 'タイトル',
+    'placeholder.book_author': '著者',
+    'placeholder.bookmark_url': 'URL（例: https://google.com）',
+    'placeholder.bookmark_name': '名前（例: Google）',
+    'empty.todo': '今日のタスクを追加してください',
+    'empty.monthly_todo': '今月のタスクを追加してください',
+    'empty.done': '記録したいことを書きましょう',
+    'empty.expenses': '今日の支出を記録してください',
+    'empty.gratitude': '今日の感謝を記録してください',
+    'empty.habits': '習慣を追加してください',
+    'empty.youtube': 'あとで見る動画を保存してください',
+    'empty.bookmarks': 'お気に入りのサイトを追加してください',
+    'label.min': '分',
+    'label.today_goal': '今日の達成',
+    'label.total': '合計',
+    'label.read_all': '読了リストをクリア',
+    'label.default_search': '検索エンジン設定',
+    'label.websearch_default': 'デフォルト',
+    'timer.focus': '🍅 ポモドーロ',
+    'timer.short': '☕ 短い休憩',
+    'timer.long': '🌙 長い休憩',
+    'report.title': '月間レポート',
+    'settings.widgets': 'ウィジェット設定',
+    'menu.search': '検索',
+    'menu.darkmode': 'ダークモード',
+    'habits.progress': '今日の達成',
+    'search.badge.todo': 'タスク',
+    'search.badge.done': '記録',
+    'search.badge.expense': '支出',
+    'search.no_results': '検索結果がありません',
+    'report.back': '← 戻る',
+    'report.collapse': 'リストを閉じる',
+    'report.summary': '📋 サマリー',
+    'report.active_days': '活動日数',
+    'report.todo_rate': 'タスク完了率',
+    'report.habit_rate': '習慣完了率',
+    'report.books_read': '読了冊数',
+    'report.total_expense': '総支出',
+    'report.section.todos': '✅ タスク',
+    'report.completed': '完了',
+    'report.rate': '完了率',
+    'report.total': '合計',
+    'report.view_completed': '完了項目を見る',
+    'report.no_completed': '完了した項目はありません。',
+    'report.section.habits': '🏃 習慣',
+    'report.no_habits': '習慣が登録されていません。',
+    'report.habit.done': '完了',
+    'report.habit.not_done': '未完了',
+    'report.habit.na': '該当なし',
+    'report.section.books': '📚 読書',
+    'report.no_books': '今月の読書記録はありません。',
+    'report.finished': '読了',
+    'report.reading': '読書中',
+    'report.section.gratitude': '🙏 感謝日記',
+    'report.record_days': '記録日数',
+    'report.total_entries': '合計項目',
+    'report.view_list': 'リストを見る',
+    'report.no_gratitude': '感謝日記の記録はありません。',
+    'report.section.expenses': '💰 支出',
+    'report.peak_day': '最高支出日',
+    'report.largest_expense': '最大支出',
+    'unit.day': '日',
+    'unit.book': '冊',
+    'unit.item': '件',
+    'affirm.placeholder': 'クリックしてアファメーションを入力',
+    'goal.placeholder': 'クリックして今年の目標を入力',
+    'carryover.done': '件を翌日へ移動',
+    'carryover.empty': '移動するタスクはありません',
   }
 };
 
@@ -1659,6 +1772,14 @@ function t(key) {
   return (TRANSLATIONS[currentLang] || TRANSLATIONS['ko'])[key] || key;
 }
 
+const LANG_CYCLE = ['ko', 'en', 'ja'];
+const LANG_NEXT_LABEL = { ko: 'EN', en: 'JA', ja: 'KO' };
+
+function cycleLang() {
+  const idx = LANG_CYCLE.indexOf(currentLang);
+  setLang(LANG_CYCLE[(idx + 1) % LANG_CYCLE.length]);
+}
+
 function setLang(lang) {
   currentLang = lang;
   localStorage.setItem('ui_language', lang);
@@ -1666,9 +1787,9 @@ function setLang(lang) {
 }
 
 function applyTranslations() {
-  // Update lang button label: show the opposite language
+  // Update lang button label: show the next language
   const langBtnLabel = document.getElementById('lang-btn-label');
-  if (langBtnLabel) langBtnLabel.textContent = currentLang === 'ko' ? 'EN' : 'KO';
+  if (langBtnLabel) langBtnLabel.textContent = LANG_NEXT_LABEL[currentLang] || 'EN';
 
   // Update html lang attribute
   document.documentElement.lang = currentLang;
@@ -1798,15 +1919,18 @@ let viewDate = '';
 
 function formatDateDisplay(str) {
   const [y,m,d] = str.split('-').map(Number);
+  const dow = new Date(y, m-1, d).getDay();
   if (currentLang === 'en') {
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const day = new Date(y, m-1, d).getDay();
-    return `${days[day]}, ${months[m-1]} ${d}, ${y}`;
+    return `${days[dow]}, ${months[m-1]} ${d}, ${y}`;
+  }
+  if (currentLang === 'ja') {
+    const days = ['日','月','火','水','木','金','土'];
+    return `${y}年${m}月${d}日 ${days[dow]}曜日`;
   }
   const days = ['일','월','화','수','목','금','토'];
-  const day = new Date(y, m-1, d).getDay();
-  return `${y}년 ${m}월 ${d}일 ${days[day]}요일`;
+  return `${y}년 ${m}월 ${d}일 ${days[dow]}요일`;
 }
 
 function changeDate(delta) {
@@ -1854,6 +1978,8 @@ function renderCalendar() {
   if (currentLang === 'en') {
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     document.getElementById('cal-month-label').textContent = `${months[calMonth-1]} ${calYear}`;
+  } else if (currentLang === 'ja') {
+    document.getElementById('cal-month-label').textContent = `${calYear}年${calMonth}月`;
   } else {
     document.getElementById('cal-month-label').textContent = `${calYear}년 ${calMonth}월`;
   }
@@ -1861,6 +1987,8 @@ function renderCalendar() {
   grid.innerHTML = '';
   const dayHeaders = currentLang === 'en'
     ? ['Su','Mo','Tu','We','Th','Fr','Sa']
+    : currentLang === 'ja'
+    ? ['日','月','火','水','木','金','土']
     : ['일','월','화','수','목','금','토'];
   dayHeaders.forEach(d => {
     const h = document.createElement('div'); h.className = 'cal-day-header'; h.textContent = d; grid.appendChild(h);
@@ -2041,8 +2169,8 @@ async function loadAffirmations() {
 }
 
 function renderAffirmPanel(affirm, goal) {
-  _setAffirmDisplay('affirm-quote', affirm, currentLang === 'ko' ? '클릭하여 나를 위한 확언을 적어보세요' : 'Click to add your affirmation');
-  _setAffirmDisplay('goal-quote',   goal,   currentLang === 'ko' ? '클릭하여 올해의 목표를 적어보세요' : 'Click to add your annual goal');
+  _setAffirmDisplay('affirm-quote', affirm, t('affirm.placeholder'));
+  _setAffirmDisplay('goal-quote',   goal,   t('goal.placeholder'));
 }
 
 function _setAffirmDisplay(elId, text, placeholder) {
@@ -2405,8 +2533,8 @@ async function carryOverTodos() {
   if (btn) {
     const orig = btn.textContent;
     btn.textContent = added > 0
-      ? (currentLang === 'ko' ? `✓ ${added}개 이월됨` : `✓ ${added} carried over`)
-      : (currentLang === 'ko' ? '이월할 항목 없음' : 'Nothing to carry over');
+      ? `✓ ${added}${t('carryover.done')}`
+      : t('carryover.empty');
     btn.disabled = true;
     setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
   }
@@ -2976,19 +3104,19 @@ async function deleteHabit(habitId) {
 const WIDGET_VIS_KEY = 'widget_visibility_b';
 
 const WIDGET_META = [
-  { id: 'panel-affirmations', key: 'widget.affirmations', nameKo: '자기확언 · 목표', nameEn: 'Affirmations' },
-  { id: 'panel-vision',       key: 'widget.vision',       nameKo: '비젼보드',         nameEn: 'Vision Board' },
-  { id: 'panel-todo',         key: 'widget.todo',         nameKo: '오늘 할 일',       nameEn: "Today's Tasks" },
-  { id: 'panel-monthly-todo', key: 'widget.monthly_todo', nameKo: '이번달 할 일',     nameEn: 'Monthly Tasks' },
-  { id: 'panel-done',         key: 'widget.done',         nameKo: '오늘 한 일',       nameEn: "Today's Done" },
-  { id: 'panel-expenses',     key: 'widget.expenses',     nameKo: '지출 내역',        nameEn: 'Expenses' },
-  { id: 'panel-gratitude',    key: 'widget.gratitude',    nameKo: '감사일기',         nameEn: 'Gratitude' },
-  { id: 'panel-websearch',    key: 'widget.websearch',    nameKo: '웹 검색',          nameEn: 'Web Search' },
-  { id: 'panel-books',        key: 'widget.books',        nameKo: '독서 목록',        nameEn: 'Reading List' },
-  { id: 'panel-habits',       key: 'widget.habits',       nameKo: '습관 트래커',      nameEn: 'Habit Tracker' },
-  { id: 'panel-youtube',      key: 'widget.youtube',      nameKo: '나중에 볼 유튜브', nameEn: 'Watch Later' },
-  { id: 'panel-memo',         key: 'widget.memo',         nameKo: '메모',             nameEn: 'Memo' },
-  { id: 'panel-bookmarks',    key: 'widget.bookmarks',    nameKo: '즐겨찾기',         nameEn: 'Bookmarks' },
+  { id: 'panel-affirmations', key: 'widget.affirmations' },
+  { id: 'panel-vision',       key: 'widget.vision'       },
+  { id: 'panel-todo',         key: 'widget.todo'         },
+  { id: 'panel-monthly-todo', key: 'widget.monthly_todo' },
+  { id: 'panel-done',         key: 'widget.done'         },
+  { id: 'panel-expenses',     key: 'widget.expenses'     },
+  { id: 'panel-gratitude',    key: 'widget.gratitude'    },
+  { id: 'panel-websearch',    key: 'widget.websearch'    },
+  { id: 'panel-books',        key: 'widget.books'        },
+  { id: 'panel-habits',       key: 'widget.habits'       },
+  { id: 'panel-youtube',      key: 'widget.youtube'      },
+  { id: 'panel-memo',         key: 'widget.memo'         },
+  { id: 'panel-bookmarks',    key: 'widget.bookmarks'    },
 ];
 
 function updateColumnVisibility() {
@@ -3002,12 +3130,11 @@ function updateColumnVisibility() {
 function renderWidgetModal() {
   const grid = document.getElementById('widget-modal-grid');
   grid.innerHTML = '';
-  WIDGET_META.forEach(({ id, nameKo, nameEn }) => {
+  WIDGET_META.forEach(({ id, key }) => {
     const isVisible = !document.getElementById(id)?.classList.contains('widget-hidden');
     const item = document.createElement('div');
     item.className = 'settings-item';
-    const displayName = currentLang === 'en' ? nameEn : nameKo;
-    item.innerHTML = `<span class="settings-item-name">${displayName}</span><div class="toggle-switch${isVisible ? ' on' : ''}"></div>`;
+    item.innerHTML = `<span class="settings-item-name">${t(key)}</span><div class="toggle-switch${isVisible ? ' on' : ''}"></div>`;
     item.onclick = () => toggleWidget(id);
     grid.appendChild(item);
   });
@@ -3988,7 +4115,7 @@ function toggleRptSection(id) {
   // update button text
   const btn = el.previousElementSibling;
   if (btn && btn.classList.contains('report-toggle-btn')) {
-    btn.textContent = hidden ? '목록 접기' : btn.dataset.openLabel || '목록 보기';
+    btn.textContent = hidden ? t('report.collapse') : btn.dataset.openLabel || t('report.view_list');
   }
 }
 
@@ -3998,6 +4125,8 @@ async function renderReport() {
   if (currentLang === 'en') {
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     document.getElementById('report-month-label').textContent = `${months[m-1]} ${y}`;
+  } else if (currentLang === 'ja') {
+    document.getElementById('report-month-label').textContent = `${y}年${m}月`;
   } else {
     document.getElementById('report-month-label').textContent = `${y}년 ${m}월`;
   }
