@@ -1510,6 +1510,38 @@ const TRANSLATIONS = {
     'search.badge.expense': '지출',
     'search.no_results': '검색 결과가 없어요',
     'report.back': '← 되돌아가기',
+    'report.summary': '📋 요약',
+    'report.active_days': '활동한 날',
+    'report.todo_rate': '할 일 완료율',
+    'report.habit_rate': '습관 완료율',
+    'report.books_read': '완독한 책',
+    'report.total_expense': '총 지출',
+    'report.section.todos': '✅ 할 일',
+    'report.completed': '완료',
+    'report.rate': '완료율',
+    'report.total': '전체',
+    'report.view_completed': '완료 항목 보기',
+    'report.no_completed': '완료된 항목이 없습니다.',
+    'report.section.habits': '🏃 습관',
+    'report.no_habits': '등록된 습관이 없습니다.',
+    'report.habit.done': '완료',
+    'report.habit.not_done': '미완료',
+    'report.habit.na': '해당 없음',
+    'report.section.books': '📚 독서',
+    'report.no_books': '이달의 독서 기록이 없습니다.',
+    'report.finished': '완독',
+    'report.reading': '읽는 중',
+    'report.section.gratitude': '🙏 감사일기',
+    'report.record_days': '기록일',
+    'report.total_entries': '전체 항목',
+    'report.view_list': '목록 보기',
+    'report.no_gratitude': '기록된 감사일기가 없습니다.',
+    'report.section.expenses': '💰 지출',
+    'report.peak_day': '최고 지출일',
+    'report.largest_expense': '최대 단일 지출',
+    'unit.day': '일',
+    'unit.book': '권',
+    'unit.item': '개',
   },
   en: {
     'widget.affirmations': 'Affirmations',
@@ -1586,6 +1618,38 @@ const TRANSLATIONS = {
     'search.badge.expense': 'Expense',
     'search.no_results': 'No results found',
     'report.back': '← Back',
+    'report.summary': '📋 Summary',
+    'report.active_days': 'Active Days',
+    'report.todo_rate': 'Task Completion',
+    'report.habit_rate': 'Habit Completion',
+    'report.books_read': 'Books Read',
+    'report.total_expense': 'Total Expenses',
+    'report.section.todos': '✅ Tasks',
+    'report.completed': 'Completed',
+    'report.rate': 'Rate',
+    'report.total': 'Total',
+    'report.view_completed': 'View completed',
+    'report.no_completed': 'No completed items.',
+    'report.section.habits': '🏃 Habits',
+    'report.no_habits': 'No habits registered.',
+    'report.habit.done': 'Done',
+    'report.habit.not_done': 'Not done',
+    'report.habit.na': 'N/A',
+    'report.section.books': '📚 Reading',
+    'report.no_books': 'No reading records this month.',
+    'report.finished': 'Finished',
+    'report.reading': 'Reading',
+    'report.section.gratitude': '🙏 Gratitude',
+    'report.record_days': 'Days',
+    'report.total_entries': 'Entries',
+    'report.view_list': 'View list',
+    'report.no_gratitude': 'No entries recorded.',
+    'report.section.expenses': '💰 Expenses',
+    'report.peak_day': 'Peak Day',
+    'report.largest_expense': 'Largest',
+    'unit.day': '',
+    'unit.book': '',
+    'unit.item': '',
   }
 };
 
@@ -4037,27 +4101,27 @@ function _renderReportSummary(dayData, endDay, habitsList, books, y, m) {
   const sec = document.createElement('div');
   sec.className = 'report-section';
   sec.innerHTML = `
-    <div class="report-section-title">📋 요약</div>
+    <div class="report-section-title">${t('report.summary')}</div>
     <div class="report-summary-grid">
       <div class="report-stat">
-        <div class="report-stat-val">${activeDays}<span style="font-size:14px;color:var(--text-muted)">일</span></div>
-        <div class="report-stat-lbl">활동한 날</div>
+        <div class="report-stat-val">${activeDays}<span style="font-size:14px;color:var(--text-muted)">${t('unit.day')}</span></div>
+        <div class="report-stat-lbl">${t('report.active_days')}</div>
       </div>
       <div class="report-stat">
         <div class="report-stat-val">${todoRate}<span style="font-size:14px;color:var(--text-muted)">%</span></div>
-        <div class="report-stat-lbl">할 일 완료율</div>
+        <div class="report-stat-lbl">${t('report.todo_rate')}</div>
       </div>
       <div class="report-stat">
         <div class="report-stat-val">${habitRate}<span style="font-size:14px;color:var(--text-muted)">%</span></div>
-        <div class="report-stat-lbl">습관 완료율</div>
+        <div class="report-stat-lbl">${t('report.habit_rate')}</div>
       </div>
       <div class="report-stat">
-        <div class="report-stat-val">${booksCompleted}<span style="font-size:14px;color:var(--text-muted)">권</span></div>
-        <div class="report-stat-lbl">완독한 책</div>
+        <div class="report-stat-val">${booksCompleted}<span style="font-size:14px;color:var(--text-muted)">${t('unit.book')}</span></div>
+        <div class="report-stat-lbl">${t('report.books_read')}</div>
       </div>
       <div class="report-stat">
         <div class="report-stat-val" style="font-size:16px">${formatKRW(totalExp)}</div>
-        <div class="report-stat-lbl">총 지출</div>
+        <div class="report-stat-lbl">${t('report.total_expense')}</div>
       </div>
     </div>`;
   return sec;
@@ -4080,17 +4144,17 @@ function _renderReportTodos(dayData, endDay) {
   const listHtml = completedList.length
     ? `<ul class="report-item-list">${completedList.map(t =>
         `<li><span class="report-item-date">${_rFmtDate(t.date)}</span><span>${_esc(t.text)}</span></li>`).join('')}</ul>`
-    : '<div style="color:var(--text-muted);font-size:13px;margin-top:8px;">완료된 항목이 없습니다.</div>';
+    : `<div style="color:var(--text-muted);font-size:13px;margin-top:8px;">${t('report.no_completed')}</div>`;
   const sec = document.createElement('div');
   sec.className = 'report-section';
   sec.innerHTML = `
-    <div class="report-section-title">✅ 할 일</div>
+    <div class="report-section-title">${t('report.section.todos')}</div>
     <div class="report-stat-row">
-      <div class="report-stat-pill">완료 <strong>${totalCompleted}개</strong></div>
-      <div class="report-stat-pill">완료율 <strong>${rate}%</strong></div>
-      <div class="report-stat-pill">전체 <strong>${totalItems}개</strong></div>
+      <div class="report-stat-pill">${t('report.completed')} <strong>${totalCompleted}${t('unit.item')}</strong></div>
+      <div class="report-stat-pill">${t('report.rate')} <strong>${rate}%</strong></div>
+      <div class="report-stat-pill">${t('report.total')} <strong>${totalItems}${t('unit.item')}</strong></div>
     </div>
-    <button class="report-toggle-btn" data-open-label="완료 항목 보기" onclick="toggleRptSection('${listId}')">완료 항목 보기</button>
+    <button class="report-toggle-btn" data-open-label="${t('report.view_completed')}" onclick="toggleRptSection('${listId}')">${t('report.view_completed')}</button>
     <div id="${listId}" class="report-list-hidden">${listHtml}</div>`;
   return sec;
 }
@@ -4099,10 +4163,10 @@ function _renderReportHabits(dayData, endDay, habitsList) {
   const sec = document.createElement('div');
   sec.className = 'report-section';
   if (!habitsList.length) {
-    sec.innerHTML = '<div class="report-section-title">🏃 습관</div><div style="color:var(--text-muted);font-size:13px;">등록된 습관이 없습니다.</div>';
+    sec.innerHTML = `<div class="report-section-title">${t('report.section.habits')}</div><div style="color:var(--text-muted);font-size:13px;">${t('report.no_habits')}</div>`;
     return sec;
   }
-  let html = '<div class="report-section-title">🏃 습관</div>';
+  let html = `<div class="report-section-title">${t('report.section.habits')}</div>`;
   for (const habit of habitsList) {
     let checks = 0, activeDays = 0, barsHtml = '';
     const createdDate  = habit.createdAt
@@ -4117,12 +4181,12 @@ function _renderReportHabits(dayData, endDay, habitsList) {
       const weekSepClass = isWeekSep ? ' week-sep' : '';
       if (d.date < createdDate || d.date >= archivedDate) {
         // 습관이 존재하지 않던 날 — 투명 셀로 채워 레이아웃 유지
-        barsHtml += `<div class="report-habit-cell${weekSepClass}" style="opacity:0.12" title="${d.date}: 해당 없음"></div>`;
+        barsHtml += `<div class="report-habit-cell${weekSepClass}" style="opacity:0.12" title="${d.date}: ${t('report.habit.na')}"></div>`;
       } else {
         activeDays++;
         const isDone = !!d.habitsRecord[habit.id];
         if (isDone) checks++;
-        barsHtml += `<div class="report-habit-cell ${isDone ? 'done' : 'not-done'}${weekSepClass}" title="${d.date}: ${isDone ? '완료' : '미완료'}"></div>`;
+        barsHtml += `<div class="report-habit-cell ${isDone ? 'done' : 'not-done'}${weekSepClass}" title="${d.date}: ${isDone ? t('report.habit.done') : t('report.habit.not_done')}"></div>`;
       }
     }
     if (activeDays === 0) continue;
@@ -4130,7 +4194,7 @@ function _renderReportHabits(dayData, endDay, habitsList) {
     html += `<div class="report-habit-row">
       <div class="report-habit-name">
         <span>${_esc(habit.name)}</span>
-        <span style="color:var(--text-muted)">${checks}/${activeDays}일 (${rate}%)</span>
+        <span style="color:var(--text-muted)">${checks}/${activeDays}${t('unit.day')} (${rate}%)</span>
       </div>
       <div class="report-habit-bar-wrap">${barsHtml}</div>
     </div>`;
@@ -4151,9 +4215,9 @@ function _renderReportBooks(books, y, m) {
     const e = (b.done && b.doneDate) ? b.doneDate : monthEnd;
     return s <= monthEnd && e >= monthStart;
   });
-  let html = '<div class="report-section-title">📚 독서</div>';
+  let html = `<div class="report-section-title">${t('report.section.books')}</div>`;
   if (!activeBooks.length) {
-    html += '<div style="color:var(--text-muted);font-size:13px;">이달의 독서 기록이 없습니다.</div>';
+    html += `<div style="color:var(--text-muted);font-size:13px;">${t('report.no_books')}</div>`;
     sec.innerHTML = html; return sec;
   }
   for (const b of activeBooks) {
@@ -4168,7 +4232,7 @@ function _renderReportBooks(books, y, m) {
     html += `<div class="report-book-row">
       <div class="report-book-title-row">
         <span>${_esc(b.title)}${b.author ? `<span style="color:var(--text-muted);font-weight:400"> · ${_esc(b.author)}</span>` : ''}</span>
-        <span style="color:var(--text-muted);font-size:11px">${_rFmtDate(start)} ~ ${_rFmtDate(end)} · ${b.done ? '완독' : '읽는 중'}</span>
+        <span style="color:var(--text-muted);font-size:11px">${_rFmtDate(start)} ~ ${_rFmtDate(end)} · ${b.done ? t('report.finished') : t('report.reading')}</span>
       </div>
       <div class="report-book-bar-wrap">
         <div class="report-book-bar-fill ${b.done ? 'done' : 'reading'}" style="left:${leftPct}%;width:${widthPct}%" title="${b.title}"></div>
@@ -4192,16 +4256,16 @@ function _renderReportGratitude(dayData, endDay) {
   const listHtml = allEntries.length
     ? `<ul class="report-item-list">${allEntries.map(g =>
         `<li><span class="report-item-date">${_rFmtDate(g.date)}</span><span>${_esc(g.text)}</span></li>`).join('')}</ul>`
-    : '<div style="color:var(--text-muted);font-size:13px;margin-top:8px;">기록된 감사일기가 없습니다.</div>';
+    : `<div style="color:var(--text-muted);font-size:13px;margin-top:8px;">${t('report.no_gratitude')}</div>`;
   const sec = document.createElement('div');
   sec.className = 'report-section';
   sec.innerHTML = `
-    <div class="report-section-title">🙏 감사일기</div>
+    <div class="report-section-title">${t('report.section.gratitude')}</div>
     <div class="report-stat-row">
-      <div class="report-stat-pill">기록일 <strong>${recordDays}일</strong></div>
-      <div class="report-stat-pill">전체 항목 <strong>${allEntries.length}개</strong></div>
+      <div class="report-stat-pill">${t('report.record_days')} <strong>${recordDays}${t('unit.day')}</strong></div>
+      <div class="report-stat-pill">${t('report.total_entries')} <strong>${allEntries.length}${t('unit.item')}</strong></div>
     </div>
-    <button class="report-toggle-btn" data-open-label="목록 보기" onclick="toggleRptSection('${listId}')">목록 보기</button>
+    <button class="report-toggle-btn" data-open-label="${t('report.view_list')}" onclick="toggleRptSection('${listId}')">${t('report.view_list')}</button>
     <div id="${listId}" class="report-list-hidden">${listHtml}</div>`;
   return sec;
 }
@@ -4233,14 +4297,14 @@ function _renderReportExpenses(dayData, endDay) {
     axisHtml  += `<div class="report-bar-axis-lbl">${(i % 7 === 0) ? (i+1) : ''}</div>`;
   }
   let statsHtml = `<div class="report-stat-row">
-    <div class="report-stat-pill">총 지출 <strong>${formatKRW(totalExp)}</strong></div>`;
-  if (peakDay) statsHtml += `<div class="report-stat-pill">최고 지출일 <strong>${_rFmtDate(peakDay)}</strong> (${formatKRW(peakAmount)})</div>`;
-  if (peakItem) statsHtml += `<div class="report-stat-pill">최대 단일 지출 <strong>${_esc(peakItem.desc)}</strong> (${formatKRW(peakItem.amount)})</div>`;
+    <div class="report-stat-pill">${t('report.total_expense')} <strong>${formatKRW(totalExp)}</strong></div>`;
+  if (peakDay) statsHtml += `<div class="report-stat-pill">${t('report.peak_day')} <strong>${_rFmtDate(peakDay)}</strong> (${formatKRW(peakAmount)})</div>`;
+  if (peakItem) statsHtml += `<div class="report-stat-pill">${t('report.largest_expense')} <strong>${_esc(peakItem.desc)}</strong> (${formatKRW(peakItem.amount)})</div>`;
   statsHtml += '</div>';
   const sec = document.createElement('div');
   sec.className = 'report-section';
   sec.innerHTML = `
-    <div class="report-section-title">💰 지출</div>
+    <div class="report-section-title">${t('report.section.expenses')}</div>
     ${statsHtml}
     <div class="report-bar-chart">${barsHtml}</div>
     <div class="report-bar-axis">${axisHtml}</div>`;
