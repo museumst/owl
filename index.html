@@ -541,6 +541,21 @@
     .search-engine-radio-item:hover { background: var(--bg-input); }
     .search-engine-radio-item input[type="radio"] { accent-color: var(--accent); cursor: pointer; }
     .search-engine-radio-item label { font-size: 14px; color: var(--text-primary); cursor: pointer; flex: 1; }
+    .se-del-btn {
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      font-size: 13px; padding: 2px 5px; border-radius: 4px;
+      opacity: 0; transition: opacity 0.15s, color 0.15s; line-height: 1;
+    }
+    .search-engine-radio-item:hover .se-del-btn { opacity: 1; }
+    .se-del-btn:hover { color: #e53e3e; }
+    #se-add-section {
+      margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+    }
+    #se-add-section .input-row { gap: 6px; margin-bottom: 0; }
+    #se-detect-msg { font-size: 11px; color: var(--text-muted); margin-top: 5px; min-height: 16px; }
+    #se-manual-row { display: none; flex-direction: column; gap: 6px; margin-top: 6px; }
+    #se-manual-row.show { display: flex; }
+    #se-manual-row .input-row { gap: 6px; margin-bottom: 0; }
     #search-engine-modal-close {
       width: 100%; margin-top: 16px; padding: 10px;
       background: var(--accent); color: #fff; border: none;
@@ -1137,6 +1152,23 @@
   <div id="search-engine-modal" onclick="event.stopPropagation()">
     <h3 data-i18n="label.default_search">기본 검색엔진 설정</h3>
     <div id="search-engine-radio-list"></div>
+    <div id="se-add-section">
+      <div class="input-row">
+        <input type="url" id="se-url-input" class="text-input" placeholder="사이트 URL 입력 (예: naver.com)"
+               onkeydown="if(event.key==='Enter'&&!event.isComposing&&event.keyCode!==229)detectSearchEngine()">
+        <button class="add-btn" onclick="detectSearchEngine()">추가</button>
+      </div>
+      <div id="se-detect-msg"></div>
+      <div id="se-manual-row">
+        <div class="input-row">
+          <input type="text" id="se-name-input" class="text-input" placeholder="이름 (예: 구글)">
+        </div>
+        <div class="input-row">
+          <input type="text" id="se-pattern-input" class="text-input" placeholder="URL (검색어 위치에 {} 입력)">
+          <button class="add-btn" onclick="confirmAddEngine()">확인</button>
+        </div>
+      </div>
+    </div>
     <button id="search-engine-modal-close" onclick="closeSearchEngineModal()" data-i18n="btn.confirm">확인</button>
   </div>
 </div>
@@ -3159,22 +3191,63 @@ function updatePomoDots() {
 }
 
 // ── 웹 검색 ──────────────────────────────────────────
-const SEARCH_ENGINES = [
-  { id: 'google',    name: '구글',      url: q => `https://www.google.com/search?q=${q}` },
-  { id: 'naver',     name: '네이버',    url: q => `https://search.naver.com/search.naver?query=${q}` },
-  { id: 'youtube',   name: '유튜브',    url: q => `https://www.youtube.com/results?search_query=${q}` },
-  { id: 'navermap',  name: '네이버지도', url: q => `https://map.naver.com/v5/search/${q}` },
-  { id: 'namuwiki',  name: '나무위키',  url: q => `https://namu.wiki/w/${q}` },
+/* 알려진 도메인 DB — URL에서 도메인 감지 시 자동 매칭 */
+const KNOWN_ENGINES_DB = {
+  'google.com':          { name: 'Google',       pattern: 'https://www.google.com/search?q={}' },
+  'naver.com':           { name: '네이버',        pattern: 'https://search.naver.com/search.naver?query={}' },
+  'youtube.com':         { name: '유튜브',        pattern: 'https://www.youtube.com/results?search_query={}' },
+  'map.naver.com':       { name: '네이버지도',    pattern: 'https://map.naver.com/v5/search/{}' },
+  'namu.wiki':           { name: '나무위키',      pattern: 'https://namu.wiki/w/{}' },
+  'bing.com':            { name: 'Bing',          pattern: 'https://www.bing.com/search?q={}' },
+  'duckduckgo.com':      { name: 'DuckDuckGo',    pattern: 'https://duckduckgo.com/?q={}' },
+  'yahoo.com':           { name: 'Yahoo',         pattern: 'https://search.yahoo.com/search?p={}' },
+  'daum.net':            { name: '다음',          pattern: 'https://search.daum.net/search?q={}' },
+  'zum.com':             { name: 'ZUM',           pattern: 'https://search.zum.com/search.web?query={}' },
+  'github.com':          { name: 'GitHub',        pattern: 'https://github.com/search?q={}' },
+  'stackoverflow.com':   { name: 'Stack Overflow',pattern: 'https://stackoverflow.com/search?q={}' },
+  'en.wikipedia.org':    { name: 'Wikipedia',     pattern: 'https://en.wikipedia.org/wiki/{}' },
+  'ko.wikipedia.org':    { name: '위키백과',      pattern: 'https://ko.wikipedia.org/wiki/{}' },
+  'amazon.com':          { name: 'Amazon',        pattern: 'https://www.amazon.com/s?k={}' },
+  'coupang.com':         { name: '쿠팡',          pattern: 'https://www.coupang.com/np/search?q={}' },
+  'gmarket.co.kr':       { name: 'G마켓',         pattern: 'https://search.gmarket.co.kr/search?keyword={}' },
+  '11st.co.kr':          { name: '11번가',        pattern: 'https://search.11st.co.kr/Search.tmall?kwd={}' },
+  'maps.google.com':     { name: 'Google Maps',   pattern: 'https://www.google.com/maps/search/{}' },
+  'papago.naver.com':    { name: '파파고',        pattern: 'https://papago.naver.com/?sk=auto&tk=ko&st={}' },
+  'translate.google.com':{ name: 'Google 번역',   pattern: 'https://translate.google.com/?text={}' },
+};
+
+const SEARCH_ENGINE_KEY    = 'default_search_engine';
+const SEARCH_ENGINES_KEY   = 'user_search_engines';
+const DEFAULT_SEARCH_ENGINES = [
+  { id: 'google',   name: 'Google',    pattern: 'https://www.google.com/search?q={}' },
+  { id: 'naver',    name: '네이버',    pattern: 'https://search.naver.com/search.naver?query={}' },
+  { id: 'youtube',  name: '유튜브',    pattern: 'https://www.youtube.com/results?search_query={}' },
+  { id: 'navermap', name: '네이버지도',pattern: 'https://map.naver.com/v5/search/{}' },
+  { id: 'namuwiki', name: '나무위키',  pattern: 'https://namu.wiki/w/{}' },
 ];
-const SEARCH_ENGINE_KEY = 'default_search_engine';
-let _activeEngineId = null; // 이번 검색에만 쓸 엔진 (null이면 기본값 사용)
+
+let _searchEngines = [];
+let _activeEngineId = null;
 let _highlightedEngineIdx = -1;
 
+function loadSearchEngines() {
+  try {
+    const stored = localStorage.getItem(SEARCH_ENGINES_KEY);
+    _searchEngines = stored ? JSON.parse(stored) : [...DEFAULT_SEARCH_ENGINES];
+  } catch(e) { _searchEngines = [...DEFAULT_SEARCH_ENGINES]; }
+}
+
+function saveSearchEngines() {
+  localStorage.setItem(SEARCH_ENGINES_KEY, JSON.stringify(_searchEngines));
+}
+
 function getDefaultEngineId() {
-  return localStorage.getItem(SEARCH_ENGINE_KEY) || 'google';
+  const id = localStorage.getItem(SEARCH_ENGINE_KEY) || 'google';
+  return _searchEngines.find(e => e.id === id) ? id : (_searchEngines[0]?.id || 'google');
 }
 
 function initSearchEngine() {
+  loadSearchEngines();
   renderEngineDropdown();
   updateEngineBtnLabel(getDefaultEngineId());
 }
@@ -3182,15 +3255,15 @@ function initSearchEngine() {
 function renderEngineDropdown() {
   const dd = document.getElementById('websearch-engine-dropdown');
   const defaultId = getDefaultEngineId();
-  dd.innerHTML = SEARCH_ENGINES.map(e =>
+  dd.innerHTML = _searchEngines.map(e =>
     `<div class="websearch-engine-option${e.id === defaultId ? ' active' : ''}"
       onclick="selectEngine('${e.id}')">${e.name}</div>`
   ).join('');
 }
 
 function updateEngineBtnLabel(id) {
-  const engine = SEARCH_ENGINES.find(e => e.id === id) || SEARCH_ENGINES[0];
-  document.getElementById('websearch-engine-label').textContent = engine.name;
+  const engine = _searchEngines.find(e => e.id === id) || _searchEngines[0];
+  if (engine) document.getElementById('websearch-engine-label').textContent = engine.name;
 }
 
 function toggleEngineDropdown() {
@@ -3205,7 +3278,7 @@ function toggleEngineDropdown() {
     dd.style.top   = (rect.bottom + window.scrollY + 4) + 'px';
     dd.style.right = (window.innerWidth - rect.right) + 'px';
     dd.classList.add('open');
-    _highlightedEngineIdx = SEARCH_ENGINES.findIndex(e => e.id === (_activeEngineId || getDefaultEngineId()));
+    _highlightedEngineIdx = _searchEngines.findIndex(e => e.id === (_activeEngineId || getDefaultEngineId()));
     highlightEngineOption(_highlightedEngineIdx);
   }
 }
@@ -3226,17 +3299,17 @@ function handleEngineBtnKeydown(e) {
   if (e.key === 'ArrowDown') {
     e.preventDefault();
     if (!isOpen) { toggleEngineDropdown(); _highlightedEngineIdx = 0; }
-    else _highlightedEngineIdx = Math.min(_highlightedEngineIdx + 1, SEARCH_ENGINES.length - 1);
+    else _highlightedEngineIdx = Math.min(_highlightedEngineIdx + 1, _searchEngines.length - 1);
     highlightEngineOption(_highlightedEngineIdx);
   } else if (e.key === 'ArrowUp') {
     e.preventDefault();
-    if (!isOpen) { toggleEngineDropdown(); _highlightedEngineIdx = SEARCH_ENGINES.length - 1; }
+    if (!isOpen) { toggleEngineDropdown(); _highlightedEngineIdx = _searchEngines.length - 1; }
     else _highlightedEngineIdx = Math.max(_highlightedEngineIdx - 1, 0);
     highlightEngineOption(_highlightedEngineIdx);
   } else if (e.key === 'Enter') {
     e.preventDefault();
     if (isOpen && _highlightedEngineIdx >= 0) {
-      selectEngine(SEARCH_ENGINES[_highlightedEngineIdx].id);
+      selectEngine(_searchEngines[_highlightedEngineIdx].id);
     } else {
       toggleEngineDropdown();
     }
@@ -3255,15 +3328,92 @@ function selectEngine(id) {
   if (q) { doWebSearch(); } else { document.getElementById('websearch-input').focus(); }
 }
 
-function openSearchEngineModal() {
+function renderSearchEngineModalList() {
   const defaultId = getDefaultEngineId();
-  document.getElementById('search-engine-radio-list').innerHTML = SEARCH_ENGINES.map(e => `
+  document.getElementById('search-engine-radio-list').innerHTML = _searchEngines.map(e => `
     <div class="search-engine-radio-item" onclick="document.getElementById('radio-${e.id}').click()">
       <input type="radio" id="radio-${e.id}" name="search-engine" value="${e.id}"${e.id === defaultId ? ' checked' : ''}
         onchange="saveDefaultEngine('${e.id}')">
       <label for="radio-${e.id}">${e.name}</label>
+      <button class="se-del-btn" onclick="deleteSearchEngine('${e.id}',event)" title="삭제">✕</button>
     </div>`).join('');
+}
+
+function openSearchEngineModal() {
+  renderSearchEngineModalList();
+  // 입력 폼 초기화
+  document.getElementById('se-url-input').value = '';
+  document.getElementById('se-detect-msg').textContent = '';
+  document.getElementById('se-manual-row').classList.remove('show');
   document.getElementById('search-engine-modal-overlay').classList.add('open');
+}
+
+function deleteSearchEngine(id, e) {
+  e.stopPropagation();
+  _searchEngines = _searchEngines.filter(eng => eng.id !== id);
+  saveSearchEngines();
+  // 삭제한 게 기본 엔진이면 첫 번째로 변경
+  if (getDefaultEngineId() === id && _searchEngines.length > 0) {
+    localStorage.setItem(SEARCH_ENGINE_KEY, _searchEngines[0].id);
+  }
+  renderSearchEngineModalList();
+  renderEngineDropdown();
+  updateEngineBtnLabel(getDefaultEngineId());
+}
+
+function detectSearchEngine() {
+  let raw = document.getElementById('se-url-input').value.trim();
+  if (!raw) return;
+  // https:// 없으면 붙여서 URL 파싱
+  if (!/^https?:\/\//i.test(raw)) raw = 'https://' + raw;
+  let hostname = '';
+  try { hostname = new URL(raw).hostname.replace(/^www\./, ''); } catch(e) { hostname = raw; }
+
+  // DB에서 매칭 (hostname 또는 subdomain 포함 full hostname)
+  const match = KNOWN_ENGINES_DB[hostname] || KNOWN_ENGINES_DB[new URL(raw).hostname] || null;
+  const msg = document.getElementById('se-detect-msg');
+  const manualRow = document.getElementById('se-manual-row');
+
+  if (match) {
+    // 자동 감지 성공 → 바로 추가
+    msg.textContent = `✓ "${match.name}" 감지됨`;
+    msg.style.color = 'var(--accent)';
+    manualRow.classList.remove('show');
+    _addSearchEngine(match.name, match.pattern);
+  } else {
+    // 미등록 사이트 → 수동 입력 유도
+    msg.textContent = '알 수 없는 사이트입니다. URL 패턴을 직접 입력해주세요.';
+    msg.style.color = 'var(--text-muted)';
+    document.getElementById('se-name-input').value = hostname;
+    document.getElementById('se-pattern-input').value = raw.replace(/\/[^\/]*$/, '/{}');
+    manualRow.classList.add('show');
+    document.getElementById('se-name-input').focus();
+  }
+}
+
+function confirmAddEngine() {
+  const name    = document.getElementById('se-name-input').value.trim();
+  const pattern = document.getElementById('se-pattern-input').value.trim();
+  if (!name || !pattern || !pattern.includes('{}')) {
+    document.getElementById('se-detect-msg').textContent = 'URL에 {} 를 포함해야 합니다.';
+    return;
+  }
+  _addSearchEngine(name, pattern);
+}
+
+function _addSearchEngine(name, pattern) {
+  const id = 'custom_' + Date.now();
+  _searchEngines.push({ id, name, pattern });
+  saveSearchEngines();
+  renderSearchEngineModalList();
+  renderEngineDropdown();
+  // 입력 폼 초기화
+  document.getElementById('se-url-input').value = '';
+  document.getElementById('se-manual-row').classList.remove('show');
+  const msg = document.getElementById('se-detect-msg');
+  msg.textContent = `"${name}" 추가됨`;
+  msg.style.color = 'var(--accent)';
+  setTimeout(() => { msg.textContent = ''; }, 2000);
 }
 
 function closeSearchEngineModal() {
@@ -3281,8 +3431,9 @@ function doWebSearch() {
   const q = document.getElementById('websearch-input').value.trim();
   if (!q) return;
   const engineId = _activeEngineId || getDefaultEngineId();
-  const engine = SEARCH_ENGINES.find(e => e.id === engineId) || SEARCH_ENGINES[0];
-  window.open(engine.url(encodeURIComponent(q)), '_blank');
+  const engine = _searchEngines.find(e => e.id === engineId) || _searchEngines[0];
+  if (!engine) return;
+  window.open(engine.pattern.replace('{}', encodeURIComponent(q)), '_blank');
   document.getElementById('websearch-input').value = '';
   // 임시 선택 초기화 → 기본값으로 복귀
   _activeEngineId = null;
